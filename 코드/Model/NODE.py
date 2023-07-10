@@ -38,11 +38,11 @@ class NODE_Encoder(nn.Module):
 
 # 디코더
 class NODEDecoder(nn.Module):
-      def __init__(self, latent_dim, hidden_dim, output_dim, device):
+      def __init__(self, latent_dim, hidden_dim, output_dim):
             super(NODEDecoder, self).__init__()
             self.relu = nn.ReLU()
 
-            func = ODE_Func(latent_dim, hidden_dim).to(device)
+            func = ODE_Func(latent_dim, hidden_dim)
             self.ode = odeint(func)
             self.l2h = nn.Linear(latent_dim, hidden_dim)
             self.h2o = nn.Linear(hidden_dim, output_dim)
