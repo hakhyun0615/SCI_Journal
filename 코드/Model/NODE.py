@@ -1,19 +1,19 @@
 import torch
 import torch.nn as nn
-from torchdiffeq import odeint
+from torchdiffeq import odeint_adjoint as odeint
 
 # ODE 함수(조정 가능)
 class ODE_Func(nn.Module):
     def __init__(self, latent_dim, hidden_dim):
         super(ODE_Func, self).__init__()
-        
+        self.elu = nn.ELU()
         self.fc1 = nn.Linear(latent_dim, hidden_dim)
         self.fc2 = nn.Linear(hidden_dim, hidden_dim)
         self.fc3 = nn.Linear(hidden_dim, latent_dim)
 
     def forward(self, x):
-        out = nn.ELU(self.fc1(x))
-        out = nn.ELU(self.fc2(out))
+        out = self.elu(self.fc1(x))
+        out = self.elu(self.fc2(out))
         out = self.fc3(out)
         return out
 
@@ -40,6 +40,7 @@ class NODE_Encoder(nn.Module):
 class NODEDecoder(nn.Module):
       def __init__(self, latent_dim, hidden_dim, output_dim, device):
             super(NODEDecoder, self).__init__()
+            self.relu = nn.ReLU()
 
             func = ODE_Func(latent_dim, hidden_dim).to(device)
             self.ode = odeint(func)
@@ -49,6 +50,6 @@ class NODEDecoder(nn.Module):
       def forward(self, z0, t):
             pred_z = self.ode(z0, t, return_whole_sequence=True)
 
-            pred_x = self.h2o(nn.ReLU(self.l2h(pred_z)))
+            pred_x = self.h2o(self.relu(self.l2h(pred_z)))
 
             return pred_x
