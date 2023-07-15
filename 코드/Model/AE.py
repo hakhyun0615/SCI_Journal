@@ -6,21 +6,17 @@ class Auto(nn.Module):
 
             # 인코더(encoder) 정의
             self.encoder = nn.Sequential(
-                  nn.Linear(input_size, 64),
+                  nn.Linear(input_size, 32),
                   nn.ReLU(),
-                  nn.Linear(64,64),
+                  nn.Linear(32,16),
                   nn.ReLU(),
-                  nn.Linear(64,256),
-                  nn.ReLU()
             )
 
             # 디코더(decoder) 정의
             self.decoder = nn.Sequential(
-                  nn.Linear(256,64),
+                  nn.Linear(16,32),
                   nn.ReLU(),
-                  nn.Linear(64,64),
-                  nn.ReLU(),
-                  nn.Linear(64, input_size),
+                  nn.Linear(32, input_size),
                   nn.Sigmoid()
             )
 
