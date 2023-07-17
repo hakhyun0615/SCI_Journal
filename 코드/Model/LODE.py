@@ -18,9 +18,9 @@ class ODE_Func(nn.Module):
         return out
 
 # 인코더
-class NODE_Encoder(nn.Module):
+class LODE_Encoder(nn.Module):
       def __init__(self, input_dim, hidden_dim, latent_dim):
-            super(NODE_Encoder, self).__init__()
+            super(LODE_Encoder, self).__init__()
             self.latent_dim = latent_dim
 
             self.rnn = nn.GRU(input_dim, hidden_dim)
@@ -37,9 +37,9 @@ class NODE_Encoder(nn.Module):
             return qz0_mean, qz0_log_var
 
 # 디코더
-class NODEDecoder(nn.Module):
+class LODEDecoder(nn.Module):
       def __init__(self, latent_dim, hidden_dim, output_dim):
-            super(NODEDecoder, self).__init__()
+            super(LODEDecoder, self).__init__()
             self.relu = nn.ReLU()
 
             func = ODE_Func(latent_dim, hidden_dim)
@@ -53,3 +53,4 @@ class NODEDecoder(nn.Module):
             pred_x = self.h2o(self.relu(self.l2h(pred_z)))
 
             return pred_x
+      
