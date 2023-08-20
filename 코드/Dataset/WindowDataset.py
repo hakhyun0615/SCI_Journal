@@ -3,7 +3,7 @@ from torch.utils.data import Dataset
 
 # data : 시점, 부동산, 경제
 # x1 : 경제 데이터, x2 : 부동산 데이터
-# y1 : 경제 라벨링, x2 : 부동산 라벨링
+# y1 : 경제 라벨링, y2 : 부동산 라벨링
 class WindowDataset(Dataset):
       def __init__(self, data, step = 5):
             X1,X2,Y1,Y2 = [],[],[],[]
@@ -16,9 +16,9 @@ class WindowDataset(Dataset):
                 Y2.append(data2.iloc[i+step].values)
 
             self.x1 = torch.FloatTensor(X1)
-            self.x2 = torch.FloatTensor(X2)
+            self.x2 = torch.FloatTensor(X2).squeeze()
             self.y1 = torch.FloatTensor(Y1)
-            self.y2 = torch.FloatTensor(Y2)
+            self.y2 = torch.FloatTensor(Y2).squeeze()
             
             self.len = len(X1)
 
