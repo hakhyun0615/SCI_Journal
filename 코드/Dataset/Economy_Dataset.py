@@ -2,11 +2,11 @@ import torch
 from torch.utils.data import Dataset
 
 class EconomyDataset(Dataset):
-      def __init__(self, data, step = 5):
+      def __init__(self, data, sequence_length=5):
             X,Y = [],[]
-            for i in range(len(data)-step-1):
-                  X.append(data[i:i+step])
-                  Y.append(data[i+step])
+            for i in range(len(data)-sequence_length-1):
+                  X.append(data[i:i+sequence_length])
+                  Y.append(data[i+sequence_length])
 
             self.x = torch.FloatTensor(X)
             self.y = torch.FloatTensor(Y)
@@ -18,3 +18,4 @@ class EconomyDataset(Dataset):
 
       def __len__(self):
             return self.len
+      
