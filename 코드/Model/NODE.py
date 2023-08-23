@@ -50,9 +50,9 @@ class NeuralODEDecoder(nn.Module):
         return output
 
 # output_dim = input_size를 의미함  
-class ODEVAE(nn.Module):
+class NODE(nn.Module):
     def __init__(self, output_dim, hidden_dim, latent_dim):
-        super(ODEVAE, self).__init__()
+        super(NODE, self).__init__()
         self.output_dim = output_dim
         self.hidden_dim = hidden_dim
         self.latent_dim = latent_dim
