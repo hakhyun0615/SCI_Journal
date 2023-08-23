@@ -9,5 +9,5 @@ class LSTM(nn.Module):
 
     def forward(self, x):
         out, _ = self.lstm(x)
-        out = self.fc(out)[0]
+        out = self.fc(out)
         return out   
