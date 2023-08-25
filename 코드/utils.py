@@ -1,16 +1,10 @@
-import numpy as np
-import torch
+import pandas as pd
 
-# '['~', '~',,,]' -> [~,~,~,,,]
-def to_list(x):
-  x = x.replace('[','').replace(']','').replace('  ','').split(' ')
-  return np.array(x,dtype=np.float64)
-
-
-def combine_tensors(real_estate_tensor, economy_tensor, real_estate_weighted_average, how):
-    if how == 'concat':
-        combined_tensor = torch.cat((real_estate_tensor, economy_tensor))
-    elif how == 'sum':
-        combined_tensor = real_estate_weighted_average * real_estate_tensor + (1 - real_estate_weighted_average) * economy_tensor
-
-    return combined_tensor
+# 평당가격 선형보간 처리
+def price_per_pyeong_interpolate(group):
+    idx = pd.date_range(group['계약년월'].min(), group['계약년월'].max(), freq='MS')
+    group = group.set_index('계약년월').reindex(idx)
+    group['단지명'] = group['단지명'].fillna(method='ffill')
+    group['시군구'] = group['시군구'].fillna(method='ffill')
+    group['평단가'] = group['평단가'].interpolate()
+    return group
