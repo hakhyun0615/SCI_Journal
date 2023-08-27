@@ -5,8 +5,8 @@ from utils import price_per_pyeong_interpolate
 
 class RNN_Transaction_Dataset(Dataset):
     def __init__(self, data, sequence_length=5):
+        data['계약년월'] = pd.to_datetime(data['계약년월'])
         interpolated_data = pd.DataFrame(data.groupby(['시군구', '단지명']).apply(price_per_pyeong_interpolate)['평단가']).reset_index().rename(columns={'level_2': '계약년월'})
-        interpolated_data['계약년월'] = pd.to_datetime(interpolated_data['계약년월']).dt.strftime('%Y%m%d') ###
 
         dongs_x, dongs_y = [], []
         for dong in interpolated_data['시군구'].unique():
@@ -17,7 +17,7 @@ class RNN_Transaction_Dataset(Dataset):
                     apartment_complex_x = filtered_interpolated_data_values[idx:idx+sequence_length]
                     apartment_complex_y = filtered_interpolated_data_values[idx+sequence_length:idx+sequence_length+1]
                     dong_x.append(apartment_complex_x)
-                    dong_y.append(apartment_complex_y)
+                    dong_y.append(apartment_complex_y)   
             dongs_x.append(dong_x)
             dongs_y.append(dong_y)
 
