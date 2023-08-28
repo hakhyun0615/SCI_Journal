@@ -4,11 +4,11 @@ from torch.utils.data import Dataset
 class RNN_Economy_Dataset(Dataset):
     def __init__(self, data, sequence_length=5):
         nation_economy_x, nation_economy_y, call_economy_x, call_economy_y = [], [], [], []
-        for i in range(len(data)-sequence_length-1):
-            nation_economy_x.append(data['국고채금리'][i:i+sequence_length].to_list())
-            nation_economy_y.append(data['국고채금리'][i+sequence_length:i+sequence_length+1].to_list())
-            call_economy_x.append(data['콜금리'][i:i+sequence_length].to_list())
-            call_economy_y.append(data['콜금리'][i+sequence_length:i+sequence_length+1].to_list())
+        for idx in range(len(data)-sequence_length):
+            nation_economy_x.append(data['국고채금리'][idx:idx+sequence_length].to_list())
+            nation_economy_y.append(data['국고채금리'][idx+sequence_length:idx+sequence_length+1].to_list())
+            call_economy_x.append(data['콜금리'][idx:idx+sequence_length].to_list())
+            call_economy_y.append(data['콜금리'][idx+sequence_length:idx+sequence_length+1].to_list())
 
         self.nation_economy_x = torch.FloatTensor(nation_economy_x)
         self.nation_economy_y = torch.FloatTensor(nation_economy_y)
