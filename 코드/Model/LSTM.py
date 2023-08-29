@@ -8,6 +8,6 @@ class LSTM(nn.Module):
         self.fc = nn.Linear(hidden_size, output_size)
 
     def forward(self, x):
-        out, _ = self.lstm(x)
+        out, hidden = self.lstm(x)
         out = self.fc(out)
-        return out   
+        return out, hidden
