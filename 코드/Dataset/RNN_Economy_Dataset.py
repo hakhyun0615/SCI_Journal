@@ -3,21 +3,17 @@ from torch.utils.data import Dataset
 
 class RNN_Economy_Dataset(Dataset):
     def __init__(self, data, sequence_length=5):
-        nation_economy_x, nation_economy_y, call_economy_x, call_economy_y = [], [], [], []
+        economy_x, economy_y = [], [],
         for idx in range(len(data)-sequence_length):
-            nation_economy_x.append(data['국고채금리'][idx:idx+sequence_length].to_list())
-            nation_economy_y.append(data['국고채금리'][idx+sequence_length:idx+sequence_length+1].to_list())
-            call_economy_x.append(data['콜금리'][idx:idx+sequence_length].to_list())
-            call_economy_y.append(data['콜금리'][idx+sequence_length:idx+sequence_length+1].to_list())
+            economy_x.append(data[idx:idx+sequence_length].to_list())
+            economy_y.append(data[idx+sequence_length:idx+sequence_length+1].to_list())
 
-        self.nation_economy_x = torch.FloatTensor(nation_economy_x)
-        self.nation_economy_y = torch.FloatTensor(nation_economy_y)
-        self.call_economy_x = torch.FloatTensor(call_economy_x)
-        self.call_economy_y = torch.FloatTensor(call_economy_y)
-        self.len = len(nation_economy_x)
+        self.economy_x = torch.FloatTensor(economy_x)
+        self.economy_y = torch.FloatTensor(economy_y)
+        self.len = len(economy_x)
 
     def __getitem__(self, i):
-        return self.nation_economy_x[i], self.nation_economy_y[i], self.call_economy_x[i], self.call_economy_y[i]
+        return self.economy_x[i], self.economy_y[i]
 
     def __len__(self):
         return self.len
