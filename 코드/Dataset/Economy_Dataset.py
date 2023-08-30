@@ -1,7 +1,7 @@
 import torch
 from torch.utils.data import Dataset
 
-class RNN_Economy_Dataset(Dataset):
+class Economy_Dataset(Dataset):
     def __init__(self, data, sequence_length=5):
         economy_x, economy_y = [], [],
         for idx in range(len(data)-sequence_length):
