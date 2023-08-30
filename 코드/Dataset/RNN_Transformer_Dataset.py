@@ -26,14 +26,8 @@ class RNN_Transformer_Dataset(Dataset):
                         grouped_current_range_filled_x.append([0.0]*sequence_length)
                         grouped_current_range_filled_y.append([0.0])
                 economy_x, economy_y = [], []
-                economy_x.extend([
-                    economy_data['국고채금리'][idx:idx+sequence_length].to_list(),
-                    economy_data['콜금리'][idx:idx+sequence_length].to_list()
-                ])
-                economy_y.extend([
-                    economy_data['국고채금리'][idx+sequence_length:idx+sequence_length+1].to_list(),
-                    economy_data['콜금리'][idx+sequence_length:idx+sequence_length+1].to_list()
-                ])
+                economy_x.append(economy_data[idx:idx+sequence_length].to_list())
+                economy_y.append(economy_data[idx+sequence_length:idx+sequence_length+1].to_list())
                 grouped_current_range_filled_and_economy_x = []
                 grouped_current_range_filled_and_economy_x.extend([grouped_current_range_filled_x, economy_x])
                 grouped_current_range_filled_and_economy_y = []

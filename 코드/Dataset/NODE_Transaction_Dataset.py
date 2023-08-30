@@ -4,7 +4,7 @@ from torch.utils.data import Dataset
 
 class NODE_Transaction_Dataset(Dataset):
     def __init__(self, data, sequence_length=5):
-        data['계약년월'] = pd.to_datetime(data['계약년월']).dt.strftime('%Y%m%d')
+        data['계약년월'] = data['계약년월'].dt.strftime('%Y%m%d')
 
         dongs_x, dongs_y = [], []
         for dong in data['시군구'].unique():
@@ -31,7 +31,7 @@ class NODE_Transaction_Dataset(Dataset):
 
     # 부동산_x, 부동산_시점_x, 부동산_y, 부동산_시점_y 
     def __getitem__(self, i):
-        return torch.FloatTensor(self.dongs_x[i][0]), torch.tensor(self.dongs_x[i][1], dtype=torch.int64), torch.FloatTensor(self.dongs_y[i][0]), torch.tensor(self.dongs_y[i][1], dtype=torch.int64)
+        return torch.FloatTensor(self.dongs_x[i][0]), torch.tensor(self.dongs_x[i][1], dtype=torch.float), torch.FloatTensor(self.dongs_y[i][0]), torch.tensor(self.dongs_y[i][1], dtype=torch.float)
 
     def __len__(self):
         return self.len
