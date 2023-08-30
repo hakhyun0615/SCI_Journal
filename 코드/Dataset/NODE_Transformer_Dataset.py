@@ -70,7 +70,3 @@ class NODE_Transformer_Dataset(Dataset):
 
     def __len__(self):
         return self.len
-
-batch_size = 1
-train_dataset = NODE_Transformer_Dataset(transaction_df, economy_df)
-train_loader = DataLoader(train_dataset, batch_size=batch_size)
