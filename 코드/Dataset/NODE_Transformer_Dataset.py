@@ -66,7 +66,7 @@ class NODE_Transformer_Dataset(Dataset):
 
     # 부동산_x, 시간_x, 경제_x, 부동산_y, 시간_y, 경제_y 
     def __getitem__(self, i):
-        return torch.FloatTensor(self.dongs_x[i][0]), torch.FloatTensor(self.dongs_x[i][1]), torch.FloatTensor(self.dongs_y[i][0]), torch.FloatTensor(self.dongs_y[i][1])
-
+        return torch.FloatTensor(self.dongs_x[i][0]), torch.FloatTensor(self.dongs_x[i][1]), torch.FloatTensor(self.dongs_x[i][2]), torch.FloatTensor(self.dongs_y[i][0]), torch.FloatTensor(self.dongs_y[i][1]), torch.FloatTensor(self.dongs_y [i][2])
+ 
     def __len__(self):
         return self.len
