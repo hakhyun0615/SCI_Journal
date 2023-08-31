@@ -3,13 +3,13 @@ from Model.ODEF import *
 # input : 독립변수 4개 + 시간 1개 => 5개
 # output : latent vector 2개
 class RNNEncoder(nn.Module):
-    def __init__(self, input_dim, hidden_dim, latent_dim):
+    def __init__(self, input_dim, hidden_dim, latent_dim, window_size):
         super(RNNEncoder, self).__init__()
         self.input_dim = input_dim
         self.hidden_dim = hidden_dim
         self.latent_dim = latent_dim
 
-        self.rnn = nn.GRU(input_dim+1, hidden_dim)
+        self.rnn = nn.GRU(input_dim+window_size, hidden_dim)
         self.hid2lat = nn.Linear(hidden_dim, 2*latent_dim)
 
     def forward(self, x, t):
@@ -51,13 +51,13 @@ class NeuralODEDecoder(nn.Module):
 
 # output_dim = input_size를 의미함  
 class NODE(nn.Module):
-    def __init__(self, output_dim, hidden_dim, latent_dim):
+    def __init__(self, output_dim, hidden_dim, latent_dim, window_size):
         super(NODE, self).__init__()
         self.output_dim = output_dim
         self.hidden_dim = hidden_dim
         self.latent_dim = latent_dim
 
-        self.encoder = RNNEncoder(output_dim, hidden_dim, latent_dim)
+        self.encoder = RNNEncoder(output_dim, hidden_dim, latent_dim, window_size)
         self.decoder = NeuralODEDecoder(output_dim, hidden_dim, latent_dim)
 
     def forward(self, x, t, MAP=False):
