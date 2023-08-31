@@ -3,13 +3,13 @@ from Model.ODEF import *
 # input : 독립변수 4개 + 시간 1개 => 5개
 # output : latent vector 2개
 class RNNEncoder(nn.Module):
-    def __init__(self, input_dim, hidden_dim, latent_dim, window_size):
+    def __init__(self, input_dim, hidden_dim, latent_dim):
         super(RNNEncoder, self).__init__()
         self.input_dim = input_dim
         self.hidden_dim = hidden_dim
         self.latent_dim = latent_dim
 
-        self.rnn = nn.GRU(input_dim+window_size, hidden_dim)
+        self.rnn = nn.GRU(input_dim+1, hidden_dim)
         self.hid2lat = nn.Linear(hidden_dim, 2*latent_dim)
 
     def forward(self, x, t):
@@ -47,27 +47,30 @@ class NeuralODEDecoder(nn.Module):
         hs = self.l2h(zs)
         xs = self.h2o(hs)
         output = self.o2o(xs) ###############
-        return output
+        
+        return output, hs
 
 # output_dim = input_size를 의미함  
 class NODE(nn.Module):
-    def __init__(self, output_dim, hidden_dim, latent_dim, window_size):
+    def __init__(self, output_dim, hidden_dim, latent_dim):
         super(NODE, self).__init__()
         self.output_dim = output_dim
         self.hidden_dim = hidden_dim
         self.latent_dim = latent_dim
 
-        self.encoder = RNNEncoder(output_dim, hidden_dim, latent_dim, window_size)
+        self.encoder = RNNEncoder(output_dim, hidden_dim, latent_dim)
         self.decoder = NeuralODEDecoder(output_dim, hidden_dim, latent_dim)
 
     def forward(self, x, t, MAP=False):
-        z_mean, z_log_var = self.encoder(x, t)
+        z_mean, z_log_var= self.encoder(x, t[:-1])
         if MAP:
             z = z_mean
         else:
             z = z_mean + torch.randn_like(z_mean) * torch.exp(0.5 * z_log_var)
-        x_p = self.decoder(z, t)
-        return x_p, z, z_mean, z_log_var
+        x_p, hs = self.decoder(z, t)
+        
+        # x값과 동일값, hidden_state, z, z_mean, z_log, 예측값
+        return x_p[:-1], hs, z, z_mean, z_log_var, x_p[-1]
 
     def generate_with_seed(self, seed_x, t):
         seed_t_len = seed_x.shape[0]
