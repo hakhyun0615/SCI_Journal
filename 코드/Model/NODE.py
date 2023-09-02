@@ -70,6 +70,7 @@ class NODE(nn.Module):
         x_p, hs = self.decoder(z, t)
         
         # x값과 동일값, hidden_state, z, z_mean, z_log, 예측값
+        # x_p와 hs는 총 6개의 데이터를 가지고 있음
         return x_p[:-1], hs, z, z_mean, z_log_var, x_p[-1]
 
     def generate_with_seed(self, seed_x, t):
