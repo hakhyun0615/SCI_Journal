@@ -4,7 +4,7 @@ from torch.utils.data import Dataset
 
 class NODE_Transformer_Dataset(Dataset):
     def __init__(self, transaction_data, economy_data, sequence_length=5):
-        all_dong_max_apartment_complex = transaction_data.drop_duplicates(subset=['시군구','단지명']).groupby(['시군구'])['단지명'].count().max()
+        all_dong_max_apartment_complex = 158 # transaction_data.drop_duplicates(subset=['시군구','단지명']).groupby(['시군구'])['단지명'].count().max()
 
         date_range = pd.date_range('20060101', '20221201', freq='MS')
         economy_data.index = date_range
