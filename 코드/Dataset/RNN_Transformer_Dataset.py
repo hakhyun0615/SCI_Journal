@@ -5,7 +5,7 @@ from utils import price_per_pyeong_fill_0
 
 class RNN_Transformer_Dataset(Dataset):
     def __init__(self, transaction_data, economy_data, sequence_length=5):
-        all_dong_max_apartment_complex = transaction_data.drop_duplicates(subset=['시군구','단지명']).groupby(['시군구'])['단지명'].count().max()
+        all_dong_max_apartment_complex = 158 # transaction_data.drop_duplicates(subset=['시군구','단지명']).groupby(['시군구'])['단지명'].count().max()
 
         filled_data = price_per_pyeong_fill_0(transaction_data)
         filled_data = filled_data[['시군구', '단지명', '계약년월', '평단가']]        
