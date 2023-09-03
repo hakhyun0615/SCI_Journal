@@ -17,7 +17,7 @@ class Self_attention(nn.Module):
         self.Linear = nn.Linear(self.data_size, self.pred_len)
             
     def calculate_attention(self, query, key, value, max_size):
-        mask = torch.zeros(key.shape)
+        mask = torch.zeros_like(key)
         mask[-2] = max_size - key[-2]
         d_k = key.shape[-1]
         attention_score = torch.matmul(query, key.transpose(-2, -1)) # Q x K^T, (n_batch, seq_len, seq_len)
