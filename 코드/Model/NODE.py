@@ -17,7 +17,7 @@ class RNNEncoder(nn.Module):
         # t = t.clone()
         t[1:] = t[:-1] - t[1:]
         t[0] = 0.
-        xt = torch.cat((x, t.type(torch.float32)), dim=-1)
+        xt = torch.cat((x, t), dim=-1)
 
         _, h0 = self.rnn(xt.flip((0,)))  # Reversed
         # Compute latent dimension
