@@ -19,7 +19,7 @@ class NODE_Transaction_Dataset(Dataset):
 
     # 부동산_x, 부동산_시점_x, 부동산_y, 부동산_시점_y 
     def __getitem__(self, i):
-        return torch.FloatTensor(self.dongs_x[i][0]), torch.tensor(self.dongs_x[i][1]), torch.FloatTensor(self.dongs_y[i][0]), torch.tensor(self.dongs_y[i][1])
+        return torch.FloatTensor(self.dongs_x[i][0]), torch.tensor(self.dongs_x[i][1], dtype=torch.float32), torch.FloatTensor(self.dongs_y[i][0]), torch.tensor(self.dongs_y[i][1], dtype=torch.float32)
 
     def __len__(self):
         return self.len
