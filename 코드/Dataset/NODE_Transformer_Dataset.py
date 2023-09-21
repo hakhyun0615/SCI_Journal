@@ -28,7 +28,7 @@ class NODE_Transformer_Dataset(Dataset):
                 current_range_filtered_x = current_range_filtered_data[current_range_filtered_data['계약년월'].isin(current_range[:-1])].groupby('단지명').apply(lambda x: x.tail(sequence_length)).reset_index(drop=True)
                 grouped_current_range_filtered_x = current_range_filtered_x.groupby('단지명').agg({'평단가': list}).reset_index()['평단가'].to_list()
                 grouped_current_range_filtered_time_x = current_range_filtered_x.groupby('단지명').agg({'계약년월': list}).reset_index()['계약년월'].to_list()
-                grouped_current_range_filtered_time_x = [[float((ts.year-pd.Timestamp('2006-01').year)*12+(ts.month-pd.Timestamp('2006-01').month)) for ts in sublist] for sublist in grouped_current_range_filtered_time_x]
+                grouped_current_range_filtered_time_x = [[float((ts.year-pd.Timestamp('2006-01').year)*12+(ts.month-pd.Timestamp('2006-01').month)+1) for ts in sublist] for sublist in grouped_current_range_filtered_time_x]
                 grouped_current_range_filtered_economy_x = [[economy_data[ts] for ts in current_range[-1-sequence_length:-1]]]
 
                 # y 기간의 단지별 평단가, 시간, 경제
@@ -41,7 +41,7 @@ class NODE_Transformer_Dataset(Dataset):
                     else:
                         grouped_current_range_filtered_y.append([0.0])
                     grouped_current_range_filtered_time_y.append([current_range[-1]])
-                grouped_current_range_filtered_time_y = [[float((ts.year-pd.Timestamp('2006-01').year)*12+(ts.month-pd.Timestamp('2006-01').month)) for ts in sublist] for sublist in grouped_current_range_filtered_time_y]
+                grouped_current_range_filtered_time_y = [[float((ts.year-pd.Timestamp('2006-01').year)*12+(ts.month-pd.Timestamp('2006-01').month)+1) for ts in sublist] for sublist in grouped_current_range_filtered_time_y]
                 grouped_current_range_filtered_economy_y.append([economy_data[current_range[-1]]])
                 
                 # 최대 단지 수만큼 단지별 평단가 채우기

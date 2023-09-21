@@ -8,7 +8,7 @@ class NODE_Transaction_Dataset(Dataset):
         for dong in data['시군구'].unique():
             for apartment_complex in data[data['시군구'] == dong]['단지명'].unique():
                 filtered_data_values = data[data['단지명'] == apartment_complex]['평단가'].values
-                filtered_data_times = data[data['단지명'] == apartment_complex]['계약년월'].apply(lambda x: float((x.year-pd.Timestamp('2006-01').year)*12+(x.month-pd.Timestamp('2006-01').month))).values
+                filtered_data_times = data[data['단지명'] == apartment_complex]['계약년월'].apply(lambda x: float((x.year-pd.Timestamp('2006-01').year)*12+(x.month-pd.Timestamp('2006-01').month)+1)).values
                 for idx in range(len(filtered_data_values)-sequence_length):
                     dongs_x.append([filtered_data_values[idx:idx+sequence_length],filtered_data_times[idx:idx+sequence_length]])
                     dongs_y.append([filtered_data_values[idx+sequence_length:idx+sequence_length+1],filtered_data_times[idx+sequence_length:idx+sequence_length+1]])
