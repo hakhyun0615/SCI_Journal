@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import math
 import torch.nn.functional as F
+from Model.ODERNN import *
 
 # embedding을 어떻게 더 할 지 고민!!!!!!!!!!!!!!
 # Q,K,V 모두 batch * seq_len * data_size
@@ -9,12 +10,15 @@ import torch.nn.functional as F
 # pred_len = 결과의 크기(만약 가격 1개만 알고싶으면 =1)
 # input : batch_size*max_size*hidden_state
 class Self_attention(nn.Module):
-    def __init__(self, max_size, data_size, pred_len):
+    def __init__(self, max_size, data_size, pred_len, hidden, latent, device, one_size=200):
         super(Self_attention, self).__init__()
         self.max_size = max_size
         self.data_size = data_size
         self.pred_len = pred_len
         self.Linear = nn.Linear(self.data_size, self.pred_len)
+        self.Q_W = ODE_RNN(256,64,1,200,200,device)
+        self.K_W = ODE_RNN(256,64,1,200,200,device)
+        self.V_W = ODE_RNN(256,64,1,200,200,device)
             
     def calculate_attention(self, query, key, value, max_size):
         mask = torch.zeros_like(key)
@@ -28,7 +32,8 @@ class Self_attention(nn.Module):
         out = torch.cat((out,mask), dim=1)
         return out
     
-    def forward(self, data):
+    def forward(self, data, time_x, time_y):
+        # 
         # attention 계산
         attention = self.calculate_attention(data,data,data,self.max_size)
         output = torch.zeros([data.size(0),self.max_size,self.pred_len],dtype=data.dtype).to(data.device)
