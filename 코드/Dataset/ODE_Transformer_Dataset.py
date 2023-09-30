@@ -53,10 +53,12 @@ class ODE_Transformer_Dataset(Dataset):
                         grouped_current_range_filtered_y.append([0.0])
                         grouped_current_range_filtered_time_y.append([0.0])
 
-                # y 단지별 평단가가 0이면 뒤로 빼기
-                combined_data = list(zip(current_range_filtered_x, grouped_current_range_filtered_y, grouped_current_range_filtered_time_x, grouped_current_range_filtered_time_y))
-                sorted_combined_data = sorted(combined_data, key=lambda x: (-x[1][0] if x[1][0] != 0 else float('inf'), x[1][0]))
-                current_range_filtered_x, grouped_current_range_filtered_y, grouped_current_range_filtered_time_x, grouped_current_range_filtered_time_y = zip(*sorted_combined_data)
+                # y 기간의 단지별 평단가가 0이면 뒤로 빼기
+                sorted_indices = np.argsort([-y[0] if y[0] != 0 else float('inf') for y in grouped_current_range_filtered_y])
+                grouped_current_range_filtered_x = np.array(grouped_current_range_filtered_x)[sorted_indices].tolist()
+                grouped_current_range_filtered_y = np.array(grouped_current_range_filtered_y)[sorted_indices].tolist()
+                grouped_current_range_filtered_time_x = np.array(grouped_current_range_filtered_time_x)[sorted_indices].tolist()
+                grouped_current_range_filtered_time_y = np.array(grouped_current_range_filtered_time_y)[sorted_indices].tolist()
 
                 # x,y 단지별 평단가, 시간, 경제 모두 묶고 dongs에 하나씩 붙이기
                 grouped_current_range_filtered_and_time_and_economy_x = []

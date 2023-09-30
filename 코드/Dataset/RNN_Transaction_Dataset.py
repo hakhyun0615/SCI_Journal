@@ -17,7 +17,6 @@ class RNN_Transaction_Dataset(Dataset):
                     apartment_complex_y = filtered_interpolated_data_values[idx+window_size:idx+window_size+1]
                     dongs_x.append(apartment_complex_x)
                     dongs_y.append(apartment_complex_y)     
-
         self.dongs_x = dongs_x
         self.dongs_y = dongs_y
         self.len = len(dongs_x)
