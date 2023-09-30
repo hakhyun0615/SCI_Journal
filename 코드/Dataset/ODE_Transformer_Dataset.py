@@ -6,7 +6,7 @@ class ODE_Transformer_Dataset(Dataset):
     def __init__(self, transaction_data, economy_data, window_size=5):
         all_dong_max_apartment_complex = 311 # transaction_data.drop_duplicates(subset=['동','단지']).groupby(['동'])['단지'].count().max()
 
-        # transaction_data['계약년월'] = pd.to_datetime(transaction_data['계약년월'].astype(str), format='%Y%m')
+        transaction_data['계약년월'] = pd.to_datetime(transaction_data['계약년월'].astype(str), format='%Y%m')
         date_range = pd.date_range('20060101', '20221201', freq='MS')
         economy_data.index = date_range
 
