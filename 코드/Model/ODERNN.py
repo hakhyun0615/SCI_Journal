@@ -44,7 +44,7 @@ class ODE_RNN(nn.Module):
         out = self.output_output(out) # (batch_size, 1)
         out = self.output_tanh(out)   # (batch_size, 1)
         output[:, 0] = out.reshape(-1)
-        h = self.rnn_cell(data[0,0].reshape(-1,1),hp)
+        h = self.rnn_cell(data[0,0].reshape(-1,1), hp)
         
         for i in range(1, t.shape[1]-1):
             # hi -> hi+1
@@ -63,5 +63,9 @@ class ODE_RNN(nn.Module):
         
         if t.shape != data.shape:
             output[:,-1] = out.reshape(-1)
+
+        print(output.device)
+        print(hp.device)
+
         
         return output, hp
