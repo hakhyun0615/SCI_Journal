@@ -63,9 +63,5 @@ class ODE_RNN(nn.Module):
         
         if t.shape != data.shape:
             output[:,-1] = out.reshape(-1)
-
-        print(output.device)
-        print(hp.device)
-
         
         return output, hp
