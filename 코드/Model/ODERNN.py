@@ -26,7 +26,7 @@ class ODE_RNN(nn.Module):
         self.h0 = torch.zeros(batch_size, hidden_size, device = device)
         self.output_hidden = nn.Linear(hidden_size, layer_dim)
         self.output_output = nn.Linear(layer_dim, 1)
-        self.output_tanh = nn.Tanh()
+        self.output_tanh = nn.Tanh()         ####### Tanh() -> 변경
         self.device = device
         self.atol = atol
         self.rtol = rtol
