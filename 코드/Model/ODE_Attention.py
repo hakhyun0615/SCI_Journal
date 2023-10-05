@@ -6,14 +6,15 @@ from Model.ODERNN import *
 
 
 class ODE_Attention(nn.Module):
-    def __init__(self, max_size, hidden_size, pred_len,  latent, device, one_size=200):
+    def __init__(self, max_size, hidden_size, pred_len,  latent, lstm_model, ODE_model, device, one_size=200):
         super(ODE_Attention, self).__init__()
         self.max_size = max_size
         self.pred_len = pred_len
         self.Linear = nn.Linear(hidden_size, self.pred_len)
-        self.Q_W = ODE_RNN(hidden_size,latent,1,one_size,one_size,device)
-        self.K_W = ODE_RNN(hidden_size,latent,1,one_size,one_size,device)
-        self.V_W = ODE_RNN(hidden_size,latent,1,one_size,one_size,device)
+        self.eco_model = lstm_model
+        self.Q_W = ODE_model
+        self.K_W = ODE_model
+        self.V_W = ODE_model
             
     def calculate_attention(self, query, key, value):
         d = query.shape[-1]
@@ -28,12 +29,10 @@ class ODE_Attention(nn.Module):
     # tran_data : batch * 단지 개수 * 데이터 크기
     # tran_data_label : 실제 정답이 있는 데이터(실제 거래 된 데이터)
     # tran_data_label 크기 : batch * 단지 개수
-    def forward(self, eco_data, tran_data, tran_data_label, time_x, time_y, alpha, eco_model):
+    def forward(self, eco_data, tran_data, tran_data_label, time_f, alpha):
         # 경제데이터
-        eco_vector = eco_model(eco_data)
+        eco_vector = self.eco_model(eco_data)[1][0]
         
-        # 시간 데이터 합성
-        time_f = torch.cat([time_x,time_y],axis=1)
         
         # 부동산 가격 데이터 : 실제 가격이 있는 곳만 답 있음, 없는 곳은 0
         output = torch.zeros(tran_data_label.shape)
@@ -43,10 +42,10 @@ class ODE_Attention(nn.Module):
         K = torch.zeros(tran_data.shape)
         V = torch.zeros(tran_data.shape)
         
-        for i in range(len(tran_data.shape[1])):
-            Q[:,i,:] = self.Q_W(tran_data[:,i,:],time_f[:,i,:]) + eco_vector
-            K[:,i,:] = self.K_W(tran_data[:,i,:],time_f[:,i,:]) + eco_vector
-            V[:,i,:] = self.V_W(tran_data[:,i,:],time_f[:,i,:]) + eco_vector
+        for i in range(tran_data.shape[1]):
+            Q[:,i,:] = self.Q_W(tran_data[:,i,:],time_f[:,i,:])[1] + eco_vector*alpha
+            K[:,i,:] = self.K_W(tran_data[:,i,:],time_f[:,i,:])[1] + eco_vector*alpha
+            V[:,i,:] = self.V_W(tran_data[:,i,:],time_f[:,i,:])[1] + eco_vector*alpha
         
         # mask 씌우기
         mask = tran_data[:,:,-1]

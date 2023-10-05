@@ -3,17 +3,18 @@ import torch
 from torch.utils.data import Dataset
 
 class ODE_Transaction_Dataset(Dataset):
-    def __init__(self, data, sequence_length=5):
+    def __init__(self, data, window_size=5):
         data['계약년월'] = pd.to_datetime(data['계약년월'].astype(str), format='%Y%m')
+        
         dongs_x, dongs_y = [], []
         for dong in data['동'].unique():
             for apartment_complex in data[data['동'] == dong]['단지'].unique():
-                filtered_data_values = data[data['단지'] == apartment_complex]['제곱미터당 거래금액(만원)'].values
-                filtered_data_times = data[data['단지'] == apartment_complex]['계약년월'].apply(lambda x: float((x.year-pd.Timestamp('2006-01').year)*12+(x.month-pd.Timestamp('2006-01').month)+1)).values
-                for idx in range(len(filtered_data_values)-sequence_length):
-                    dongs_x.append([filtered_data_values[idx:idx+sequence_length],filtered_data_times[idx:idx+sequence_length]])
-                    dongs_y.append([filtered_data_values[idx+sequence_length:idx+sequence_length+1],filtered_data_times[idx+sequence_length:idx+sequence_length+1]])
-
+                    filtered_data = data[(data['동'] == dong)*(data['단지'] == apartment_complex)]
+                    filtered_data_values = filtered_data['제곱미터당 거래금액(만원)'].values
+                    filtered_data_times = filtered_data['계약년월'].apply(lambda x: float((x.year-pd.Timestamp('2006-01').year)*12+(x.month-pd.Timestamp('2006-01').month)+1)).values
+                    for idx in range(len(filtered_data_values)-window_size):
+                        dongs_x.append([filtered_data_values[idx:idx+window_size],filtered_data_times[idx:idx+window_size]])
+                        dongs_y.append([filtered_data_values[idx+window_size:idx+window_size+1],filtered_data_times[idx+window_size:idx+window_size+1]])
         self.dongs_x = dongs_x
         self.dongs_y = dongs_y
         self.len = len(dongs_x)
