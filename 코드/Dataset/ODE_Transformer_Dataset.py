@@ -29,7 +29,7 @@ class ODE_Transformer_Dataset(Dataset):
 
                 # x 기간의 단지별 평단가, 시간, 경제(x 기간 중 마지막 window_size 만큼)
                 current_range_filtered_x = current_range_filtered_data[current_range_filtered_data['계약년월'].isin(current_range[:-1])].groupby('단지').apply(lambda x: x.tail(window_size)).reset_index(drop=True)
-                grouped_current_range_filtered_x = current_range_filtered_x.groupby('단지').agg({'제곱미터당 거래금액(만원)': list}).reset_index()['제곱미터당 거래금액(만원)'].to_list()
+                grouped_current_range_filtered_x = current_range_filtered_x.groupby('단지').agg({'제곱미터당 거래금액': list}).reset_index()['제곱미터당 거래금액'].to_list()
                 grouped_current_range_filtered_time_x = current_range_filtered_x.groupby('단지').agg({'계약년월': list}).reset_index()['계약년월'].to_list()
                 grouped_current_range_filtered_time_x = [[float((ts.year-pd.Timestamp('2006-01').year)*12+(ts.month-pd.Timestamp('2006-01').month)+1) for ts in sublist] for sublist in grouped_current_range_filtered_time_x]
                 grouped_current_range_filtered_economy_x = [[economy_data['통화량'][ts] for ts in current_range[-1-window_size:-1]]]
@@ -40,7 +40,7 @@ class ODE_Transformer_Dataset(Dataset):
                 grouped_current_range_filtered_economy_y = []
                 for apartment_complex in current_range_apartment_complex:
                     if current_range_filtered_data[current_range_filtered_data['단지']==apartment_complex]['계약년월'].isin([current_range[-1]]).any():                
-                        grouped_current_range_filtered_y.append(current_range_filtered_data[(current_range_filtered_data['단지']==apartment_complex) & (current_range_filtered_data['계약년월']==current_range[-1])]['제곱미터당 거래금액(만원)'].to_list())
+                        grouped_current_range_filtered_y.append(current_range_filtered_data[(current_range_filtered_data['단지']==apartment_complex) & (current_range_filtered_data['계약년월']==current_range[-1])]['제곱미터당 거래금액'].to_list())
                     else:
                         grouped_current_range_filtered_y.append([0.0])
                     grouped_current_range_filtered_time_y.append([current_range[-1]])

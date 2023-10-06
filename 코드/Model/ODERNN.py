@@ -6,7 +6,9 @@ class OR_ODE_Func(nn.Module):
     def __init__(self, hidden_size, layer_dim):
         super(OR_ODE_Func, self).__init__()
         self.hidden_layer = nn.Linear(hidden_size, layer_dim)
+        self.layer_norm1 = nn.LayerNorm(layer_dim)
         self.output_layer = nn.Linear(layer_dim, hidden_size)
+        self.layer_norm2 = nn.LayerNorm(hidden_size) 
 
         # xavier initialization for weights
         nn.init.xavier_uniform_(self.hidden_layer.weight)
@@ -21,7 +23,11 @@ class OR_ODE_Func(nn.Module):
     def forward(self, t, input):
         x = input
         x = self.hidden_layer(x)
-        x = self.output_layer(x)    
+        x = self.layer_norm1(x)
+        x = self.tanh(x) #####
+        x = self.output_layer(x)
+        x = self.layer_norm2(x)    
+        x = self.tanh(x)
         return x
 
 
@@ -33,7 +39,9 @@ class ODE_RNN(nn.Module):
         self.rnn_cell = nn.GRUCell(input_size = 1, hidden_size =hidden_size)
         self.h0 = torch.zeros(batch_size, hidden_size, device = device)
         self.output_hidden = nn.Linear(hidden_size, layer_dim)
+        self.layer_norm_hidden = nn.LayerNorm(layer_dim) 
         self.output_output = nn.Linear(layer_dim, 1)
+        self.layer_norm_output = nn.LayerNorm(1)
           
         ### xavier 초기화
         for name,param in self.rnn_cell.named_parameters():
@@ -60,7 +68,10 @@ class ODE_RNN(nn.Module):
         hp = odeint(self.ode_func, self.h0, torch.tensor([0.0, t[0, 0]], device = self.device), rtol = self.rtol, atol = self.atol)[1]
         # h1 -> out1 
         out = self.output_hidden(hp)  # (batch_size, layer_dim)
+        out = self.layer_norm_hidden(out)
+        out = self.tanh(out) #####
         out = self.output_output(out) # (batch_size, 1)
+        out = self.layer_norm_output(out) 
         out = self.tanh(out)   # (batch_size, 1)
         output[:, 0] = out.reshape(-1)
         h = self.rnn_cell(data[0,0].reshape(-1,1), hp)
@@ -69,7 +80,10 @@ class ODE_RNN(nn.Module):
             # hi -> hi+1
             hp = odeint(self.ode_func, h, t[0, i - 1:i + 1], rtol = self.rtol, atol = self.atol)[1]  ####### h->hp
             out = self.output_hidden(hp)
+            out = self.layer_norm_hidden(out)
+            out = self.tanh(out) #####
             out = self.output_output(out)
+            out = self.layer_norm_output(out)
             out = self.tanh(out)
             output[:, i] = out.reshape(-1)
             h = self.rnn_cell(data[0,i].reshape(-1,1),hp)
@@ -77,7 +91,10 @@ class ODE_RNN(nn.Module):
         # 마지막 
         hp = odeint(self.ode_func, h, t[0, t.shape[1]-2:t.shape[1]], rtol = self.rtol, atol = self.atol)[1]  ####### h->hp
         out = self.output_hidden(hp)
+        out = self.layer_norm_hidden(out)
+        out = self.tanh(out) #####
         out = self.output_output(out)
+        out = self.layer_norm_output(out)
         out = self.tanh(out)
         
         if t.shape != data.shape:
