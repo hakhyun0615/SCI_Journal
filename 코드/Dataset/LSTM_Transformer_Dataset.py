@@ -3,7 +3,7 @@ import torch
 from torch.utils.data import Dataset
 from utils import price_fill_0
 
-class RNN_Transformer_Dataset(Dataset):
+class LSTM_Transformer_Dataset(Dataset):
     def __init__(self, transaction_data, economy_data, window_size=5):
         all_dong_max_apartment_complex = 311 # transaction_data.drop_duplicates(subset=['동','단지']).groupby(['동'])['단지'].count().max()
 
