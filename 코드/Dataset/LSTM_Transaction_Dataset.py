@@ -3,7 +3,7 @@ import torch
 from torch.utils.data import Dataset
 from utils import price_interpolate
 
-class RNN_Transaction_Dataset(Dataset):
+class LSTM_Transaction_Dataset(Dataset):
     def __init__(self, data, window_size=5):
         data['계약년월'] = pd.to_datetime(data['계약년월'].astype(str), format='%Y%m')
         interpolated_data = pd.DataFrame(data.groupby(['동', '단지']).apply(price_interpolate)['제곱미터당 거래금액']).reset_index().rename(columns={'level_2':'계약년월'})
