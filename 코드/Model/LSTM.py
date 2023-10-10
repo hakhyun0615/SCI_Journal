@@ -6,7 +6,7 @@ class LSTM(nn.Module):
         self.device = device
         self.hidden_size = hidden_size
         
-        self.lstm = nn.LSTM(input_size, hidden_size, batchfirst=True).to(self.device)
+        self.lstm = nn.LSTM(input_size, hidden_size).to(self.device)
         self.fc = nn.Linear(hidden_size, output_size).to(self.device)
 
     def forward(self, x):
