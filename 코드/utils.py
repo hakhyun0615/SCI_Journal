@@ -5,50 +5,56 @@ from sklearn.experimental import enable_iterative_imputer
 from sklearn.impute import IterativeImputer
 
 # 전처리
-def preprocess(transaction_all, economy_all, window_size=5):
+def preprocess(transaction_df, economy_df, window_size=5):
     # transaction_all 전처리
-    transaction_all['계약연도'] = transaction_all['계약년월'].apply(lambda x: str(x)[:4])
-    transaction_all['거래금액(만원)'] = transaction_all['거래금액(만원)'].apply(lambda x: int(x.replace(',','')))
-    transaction_all['제곱미터당 거래금액'] = (transaction_all['거래금액(만원)'] / transaction_all['전용면적(㎡)']) / 100 ########
-    transaction_all['단지'] = transaction_all['시군구'] + ' ' + transaction_all['단지명']
-    transaction_all = transaction_all[['단지', '계약년월', '건축년도', '제곱미터당 거래금액']]
+    transaction_df['계약연도'] = transaction_df['계약년월'].apply(lambda x: str(x)[:4])
+    transaction_df['거래금액(만원)'] = transaction_df['거래금액(만원)'].apply(lambda x: int(x.replace(',','')))
+    transaction_df['제곱미터당 거래금액'] = (transaction_df['거래금액(만원)'] / transaction_df['전용면적(㎡)']) / 100 ########
+    transaction_df['단지'] = transaction_df['시군구'] + ' ' + transaction_df['단지명']
+    transaction_df = transaction_df[['단지', '계약년월', '건축년도', '제곱미터당 거래금액']]
 
     # economy_all 전처리
-    date_range = pd.date_range(start="2006-01", periods=len(economy_all), freq="M")
-    economy_all['계약년월'] = date_range.strftime('%Y%m').astype(int)
+    date_range = pd.date_range(start="2006-01", periods=len(economy_df), freq="M")
+    economy_df['계약년월'] = date_range.strftime('%Y%m').astype(int)
 
     # 동일 동,단지이지만 건축년도가 다른 단지 제거
-    transaction_all = transaction_all.groupby('단지').filter(lambda x: x['건축년도'].nunique() == 1)
-
-    # 거개량 적은(window_size+1 미만) 단지 제거
-    apartment_complex_volume = transaction_all.groupby('단지').agg({'건축년도':'first','제곱미터당 거래금액':'count'}).reset_index().rename(columns={'제곱미터당 거래금액':'거래량'})
-    small_volume_apartment_complexes = apartment_complex_volume[apartment_complex_volume['거래량'] < window_size+1]['단지'].to_list()
-    transaction_all = transaction_all[~transaction_all['단지'].isin(small_volume_apartment_complexes)].reset_index(drop=True)
-
-    # 이상치 제거
-    transaction_all['Z 스코어'] = transaction_all.groupby('단지')['제곱미터당 거래금액'].transform(lambda x: (x-x.mean()) / x.std())
-    transaction_all = transaction_all[transaction_all['Z 스코어'].between(-3, 3)]
-    transaction_all = transaction_all.drop(columns=['Z 스코어']).reset_index(drop=True)
+    transaction_df = transaction_df.groupby('단지').filter(lambda x: x['건축년도'].nunique() == 1)
 
     # 동일 단지,계약년월일 경우, 제곱미터당 거래금액(만원) 평균
-    transaction_all = transaction_all.groupby(['단지','계약년월','건축년도'])['제곱미터당 거래금액'].mean().to_frame().reset_index()
+    transaction_df = transaction_df.groupby(['단지','계약년월','건축년도'])['제곱미터당 거래금액'].mean().to_frame().reset_index()
 
+    # 2022년도 전까지 거래량 적은(window_size+1 미만) 단지 제거
+    transaction_else_df = transaction_df[transaction_df['계약년월']//100 != 2022]
+    apartment_complex_volume = transaction_else_df.groupby('단지').agg({'건축년도':'first','제곱미터당 거래금액':'count'}).reset_index().rename(columns={'제곱미터당 거래금액':'거래량'})
+    small_volume_apartment_complexes = apartment_complex_volume[apartment_complex_volume['거래량'] < window_size+1]['단지'].to_list()
+    transaction_df = transaction_df[~transaction_df['단지'].isin(small_volume_apartment_complexes)].reset_index(drop=True)
+    # 이상치 제거
+    transaction_df['Z 스코어'] = transaction_df.groupby('단지')['제곱미터당 거래금액'].transform(lambda x: (x-x.mean()) / x.std())
+    transaction_df = transaction_df[transaction_df['Z 스코어'].between(-3, 3)]
+    transaction_df = transaction_df.drop(columns=['Z 스코어']).reset_index(drop=True)
+
+    # 2022에만 있는 단지 제거
+    transaction_2022_df = transaction_df[transaction_df['계약년월']//100 == 2022]
+    apartment_complex_only_2022 = set(transaction_2022_df['단지'].unique()) - set(transaction_else_df['단지'].unique())
+    transaction_df = transaction_df[~transaction_df['단지'].isin(apartment_complex_only_2022)]
+    
     # 동과 단지 분리
-    transaction_all['동'] = transaction_all['단지'].apply(lambda x: x.split(' ')[:3]).apply(lambda x: ' '.join(x))
-    transaction_all['단지'] = transaction_all['단지'].apply(lambda x: x.split(' ')[3:]).apply(lambda x: ' '.join(x))
-    transaction_all = transaction_all[['동','단지','건축년도','계약년월','제곱미터당 거래금액']]
+    transaction_df['동'] = transaction_df['단지'].apply(lambda x: x.split(' ')[:3]).apply(lambda x: ' '.join(x))
+    transaction_df['단지'] = transaction_df['단지'].apply(lambda x: x.split(' ')[3:]).apply(lambda x: ' '.join(x))
+    transaction_df = transaction_df[['동','단지','건축년도','계약년월','제곱미터당 거래금액']]
 
-    return transaction_all, economy_all
+    return transaction_df, economy_df
 
 # 평당가격 보간 처리
-def price_interpolate(group):
-    idx = pd.date_range(group['계약년월'].min(), group['계약년월'].max(), freq='MS')
+def price_interpolate(group, start, end):
+    idx = pd.date_range(start, end, freq='MS')
     group = group.set_index('계약년월').reindex(idx)
     group['동'] = group['동'].fillna(method='ffill')
     group['단지'] = group['단지'].fillna(method='ffill')
     group['건축년도'] = group['건축년도'].fillna(method='ffill')
-    imputer = IterativeImputer(max_iter=10, random_state=0)
-    group['제곱미터당 거래금액'] = imputer.fit_transform(group[['제곱미터당 거래금액']])
+    group['제곱미터당 거래금액'] = group[['제곱미터당 거래금액']].interpolate()
+    # imputer = IterativeImputer(max_iter=10, random_state=0)
+    # group['제곱미터당 거래금액'] = imputer.fit_transform(group[['제곱미터당 거래금액']])
     
     return group
 
