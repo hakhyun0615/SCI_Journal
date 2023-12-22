@@ -23,7 +23,7 @@ class RNN_Transaction_Dataset(Dataset):
 
     # 부동산_x, 부동산_y
     def __getitem__(self, i):
-        return torch.FloatTensor(self.dongs_x[i][0]), torch.FloatTensor(self.dongs_x[i][1]), torch.FloatTensor(self.dongs_y[i][0]), torch.FloatTensor(self.dongs_y[i][1])
+        return torch.FloatTensor(self.dongs_x[i]), torch.FloatTensor(self.dongs_y[i])
 
     def __len__(self):
         return self.len
