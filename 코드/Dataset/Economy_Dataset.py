@@ -3,7 +3,7 @@ from torch.utils.data import Dataset
 
 class Economy_Dataset(Dataset):
     def __init__(self, data, sequence_length=5):
-        economy_x, economy_y = [], [],
+        economy_x, economy_y = [], []
         for idx in range(len(data)-sequence_length):
             economy_x.append(data[idx:idx+sequence_length].to_list())
             economy_y.append(data[idx+sequence_length:idx+sequence_length+1].to_list())
