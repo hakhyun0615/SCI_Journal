@@ -19,9 +19,9 @@ class LSTM_Dataset(Dataset):
             economy_tensor = torch.FloatTensor(economy_values)
             encoder_input_tensor = torch.cat((apartment_complex_tensor, economy_tensor), dim=1)
 
-            apartment_complex_embedding_matrix = np.zeros((encoder_input_tensor.size(0), embedding_dim))
+            apartment_complex_embedding_matrix = np.zeros((encoder_input_tensor.shape[0], embedding_dim))
             with torch.no_grad():
-                for i in range(encoder_input_tensor.size(0)):
+                for i in range(encoder_input_tensor.shape[0]):
                     apartment_complex_embedding_vector = model.encoder(encoder_input_tensor[i].unsqueeze(0)).squeeze().numpy()
                     apartment_complex_embedding_matrix[i] = apartment_complex_embedding_vector
             apartment_complex_embedding_matrix_tensor = torch.FloatTensor(apartment_complex_embedding_matrix)
@@ -30,7 +30,7 @@ class LSTM_Dataset(Dataset):
             price_values = pd.DataFrame({'did': range(0, 204)}).merge(table_3[table_3['aid'] == apartment_complex_aid][['did','price']], on='did', how='outer').fillna(0).set_index('did').values
             price_tensor = torch.FloatTensor(price_values)
 
-            for i in range(apartment_complex_embedding_matrix_tensor.size(0)-window_size):
+            for i in range(apartment_complex_embedding_matrix_tensor.shape[0]-window_size):
                 apartment_complexes_embedding_matrix_with_window_size.append(apartment_complex_embedding_matrix_tensor[i:i+window_size, :])
                 apartment_complexes_price_with_window_size.append(price_tensor[i+window_size, :])
 
