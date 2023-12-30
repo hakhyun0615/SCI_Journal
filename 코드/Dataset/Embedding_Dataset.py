@@ -2,7 +2,7 @@ import pandas as pd
 import torch
 from torch.utils.data import Dataset
 
-class AutoEncoder_Dataset(Dataset):
+class Embedding_Dataset(Dataset):
     def __init__(self, table_1, table_2, table_3):
         table_merge = pd.merge(table_1, table_3, how='left', on='aid')
         table_merge = pd.merge(table_merge, table_2, how='left', on='did')

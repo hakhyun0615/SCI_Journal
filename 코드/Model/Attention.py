@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-
+    
 class LSTMEncoder(nn.Module):
     def __init__(self, emb_dim, hid_dim, out_dim):
         super(LSTMEncoder, self).__init__()
@@ -39,13 +39,13 @@ class AttnLSTMDecoder(nn.Module):
             return inputs
 
         query = input.unsqueeze(1)   # hid_dim, 1
-        key = hidden.squeeze()  # num * hid_dim
-        value = hidden.squeeze()
+        key = hidden[0]  # num * hid_dim
+        value = hidden[0]  # num * hid_dim
 
-        att_score = (key @ query).squeeze() # num, 1
+        att_score = (key @ query)   # num, 1
         att_value = F.softmax(att_score, dim=0)  # num,1
 
-        a = (att_value.squeeze() @ value).squeeze() # hid_dim
+        a = (att_value.permute(1,0) @ value).squeeze() # hid_dim
         s = torch.cat([query.squeeze(), a])  # 2hid_dim
         # s = dropout(s)
         s = self.fc1(s)  # hid_dim
