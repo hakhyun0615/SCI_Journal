@@ -3,15 +3,14 @@ import torch
 
 # channels : 변수의 개수
 class NLinear(nn.Module):
-    def __init__(self, emb_dim, window_size, out_dim):
+    def __init__(self, emb_dim, window_size):
         super(NLinear, self).__init__()
         self.emb_dim = emb_dim
         self.window_size = window_size
-        self.out_dim = out_dim
-        self.Linear = nn.Linear(self.window_size, self.out_dim)
+        self.Linear = nn.Linear(self.window_size, 1)
         self.Linear = torch.nn.ModuleList()
         for i in range(self.emb_dim):
-            self.Linear.append(torch.nn.Linear(self.window_size, self.out_dim))
+            self.Linear.append(torch.nn.Linear(self.window_size, 1))
         self.Linear2 = nn.Linear(self.emb_dim, 1)
     
     # input : num * window_size * emb_dim
