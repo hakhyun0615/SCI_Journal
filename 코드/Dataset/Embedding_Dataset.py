@@ -1,6 +1,8 @@
 import pandas as pd
+import numpy as np
 import torch
 from torch.utils.data import Dataset
+from sklearn.preprocessing import StandardScaler
 
 class Embedding_Dataset(Dataset):
     def __init__(self, table_1, table_2, table_3):
@@ -11,12 +13,16 @@ class Embedding_Dataset(Dataset):
         economy = table_merge[['call_rate','m2']]
         price = table_merge[['price']]
 
-        apartment_tensor = torch.FloatTensor(apartment.values)
-        economy_tensor = torch.FloatTensor(economy.values)
-        price_tensor = torch.FloatTensor(price.values)
+        apartment_values = apartment.values
+        economy_values = economy.values
+        price_values = price.values
         
-        self.input_tensor = torch.cat((apartment_tensor, economy_tensor), dim=1)
-        self.output_tensor = price_tensor
+        input_values = np.concatenate((apartment_values, economy_values), axis=1)
+        input_values = StandardScaler().fit_transform(input_values)
+        output_values = price_values
+
+        self.input_tensor = torch.FloatTensor(input_values)
+        self.output_tensor = torch.FloatTensor(output_values)
 
     def __getitem__(self, i):
         return self.input_tensor[i], self.output_tensor[i]
