@@ -15,7 +15,7 @@ class NLinear(nn.Module):
     
     def forward(self, x):
         seq_last = x[:,-1,:].detach()  # num * 1 * emb_dim
-        for i in range(len(x)):
+        for i in range(x.shape[1]):
             x[:,i,:] = x[:,i,:] - seq_last 
 
         output = torch.zeros([x.size(0), self.emb_dim], dtype=x.dtype).to(x.device)
