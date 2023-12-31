@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import torch
 from torch.utils.data import Dataset
+from sklearn.preprocessing import StandardScaler
 
 class Attention_Dataset(Dataset):
     def __init__(self, model, table_1, table_2, table_3, embedding_dim, window_size):
@@ -12,9 +13,11 @@ class Attention_Dataset(Dataset):
         dongs_apartment_complexes_embedding_matrixes_with_window_size_index = [] # y 값이 있는 단지 index # (전체 동 개수 * 199, ?)
         dongs_apartment_complexes_prices_with_window_size = [] # (전체 동 개수 * 199, 38, 1)
 
-        max_apartment_complexes = 38 # 최대 단지 개수
-
+        table_1[[cols for cols in table_1.columns if cols not in ['aid','location','name']]] = StandardScaler().fit_transform(table_1[[cols for cols in table_1.columns if cols not in ['aid','location','name']]])
         table_1['dong'] = table_1['location'].apply(lambda x: x.split(' ')[2])
+        table_2[['call_rate','m2']] = StandardScaler().fit_transform(table_2[['call_rate','m2']])
+        
+        max_apartment_complexes = 38 # 최대 단지 개수
         dongs = table_1['dong'].unique()
 
         # 동 마다

@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import torch
 from torch.utils.data import Dataset
+from sklearn.preprocessing import StandardScaler
 
 class LSTM_Dataset(Dataset):
     def __init__(self, model, table_1, table_2, table_3, embedding_dim, window_size):
@@ -9,6 +10,9 @@ class LSTM_Dataset(Dataset):
 
         apartment_complexes_embedding_matrix_with_window_size = []
         apartment_complexes_price_with_window_size = []
+
+        table_1[[cols for cols in table_1.columns if cols not in ['aid','location','name']]] = StandardScaler().fit_transform(table_1[[cols for cols in table_1.columns if cols not in ['aid','location','name']]])
+        table_2[['call_rate','m2']] = StandardScaler().fit_transform(table_2[['call_rate','m2']])
 
         apartment_complexes_location = table_1['location']
         apartment_complexes_name = table_1['name']
