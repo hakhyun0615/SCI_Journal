@@ -13,6 +13,7 @@ class LSTM_Dataset(Dataset):
 
         table_1[[cols for cols in table_1.columns if cols not in ['aid','location','name']]] = StandardScaler().fit_transform(table_1[[cols for cols in table_1.columns if cols not in ['aid','location','name']]])
         table_2[['call_rate','m2']] = StandardScaler().fit_transform(table_2[['call_rate','m2']])
+        table_3[['price']] = table_3[['price']] * 0.0001
 
         apartment_complexes_location = table_1['location']
         apartment_complexes_name = table_1['name']

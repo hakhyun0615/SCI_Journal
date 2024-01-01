@@ -16,6 +16,7 @@ class Attention_Dataset(Dataset):
         table_1[[cols for cols in table_1.columns if cols not in ['aid','location','name']]] = StandardScaler().fit_transform(table_1[[cols for cols in table_1.columns if cols not in ['aid','location','name']]])
         table_1['dong'] = table_1['location'].apply(lambda x: x.split(' ')[2])
         table_2[['call_rate','m2']] = StandardScaler().fit_transform(table_2[['call_rate','m2']])
+        table_3[['price']] = table_3[['price']] * 0.0001
         
         max_apartment_complexes = 38 # 최대 단지 개수
         dongs = table_1['dong'].unique()

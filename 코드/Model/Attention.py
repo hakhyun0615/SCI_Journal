@@ -19,10 +19,9 @@ class LSTMEncoder(nn.Module):
         return y_hat, hidden, cell    
     
 class AttnLSTMDecoder(nn.Module):
-    def __init__(self, emb_dim, hid_dim, out_dim, dropout, device):
+    def __init__(self, emb_dim, hid_dim, out_dim, dropout):
         super(AttnLSTMDecoder, self).__init__()
         self.dropout = dropout
-        self.device = device
 
         self.lstm = nn.LSTM(input_size=emb_dim, hidden_size=hid_dim, dropout=dropout, batch_first=True)
         self.fc1 = nn.Linear(hid_dim + hid_dim, hid_dim)
@@ -35,7 +34,7 @@ class AttnLSTMDecoder(nn.Module):
         def dropout(inputs):
             if self.training:
                 mask = (torch.rand(*inputs.shape)<self.dropout) / self.dropout
-                inputs = inputs * mask.to(self.device)
+                inputs = inputs * mask
             return inputs
 
         query = input.unsqueeze(1)   # hid_dim, 1
@@ -55,22 +54,21 @@ class AttnLSTMDecoder(nn.Module):
         return y_hat
     
 class LSTMSeq2Seq(nn.Module):
-    def __init__(self, emb_dim, hid_dim, out_dim, device, dropout=0.):
+    def __init__(self, emb_dim, hid_dim, out_dim, dropout=0.):
         super(LSTMSeq2Seq, self).__init__()
         self.out_dim = out_dim
         self.emb_dim = emb_dim
         self.hid_dim = hid_dim
-        self.device = device
         self.dropout = nn.Dropout(dropout)
 
         self.encoder = LSTMEncoder(emb_dim, hid_dim, out_dim)
-        self.decoder = AttnLSTMDecoder(emb_dim, hid_dim, out_dim, dropout, device)
+        self.decoder = AttnLSTMDecoder(emb_dim, hid_dim, out_dim, dropout)
 
     # src : num * emb_dim
     # index : trg 값이 있는 것
     def forward(self, src, index, mx_len):
         # Encoder 
-        hiddens,hidden,cell = self.encoder(src)  # hidden : 1, num, hid_dim
+        hiddens, hidden, cell = self.encoder(src)  # hidden : 1, num, hid_dim
         # Decoder
         y_hat = self.decoder(hidden[0][index], hidden[:,:mx_len,:])
         return y_hat

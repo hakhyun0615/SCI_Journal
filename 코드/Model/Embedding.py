@@ -7,25 +7,25 @@ class Embedding(nn.Module):
         self.encoder = nn.Sequential(
             nn.Linear(12, encoder_dim_1),
             nn.BatchNorm1d(encoder_dim_1), 
-            nn.ReLU(True),
+            nn.ReLU(),
             nn.Linear(encoder_dim_1, encoder_dim_2),
             nn.BatchNorm1d(encoder_dim_2), 
-            nn.ReLU(True),
+            nn.ReLU(),
             nn.Linear(encoder_dim_2, encoder_dim_3),
             nn.BatchNorm1d(encoder_dim_3), 
-            nn.ReLU(True),
+            nn.ReLU(),
             nn.Linear(encoder_dim_3, embedding_dim),
         )
         self.decoder = nn.Sequential(
             nn.Linear(embedding_dim, decoder_1),
             nn.BatchNorm1d(decoder_1),  
-            nn.ReLU(True),
+            nn.ReLU(),
             nn.Linear(decoder_1, decoder_2),
             nn.BatchNorm1d(decoder_2),  
-            nn.ReLU(True),
+            nn.ReLU(),
             nn.Linear(decoder_2, decoder_3),
             nn.BatchNorm1d(decoder_3),  
-            nn.ReLU(True),
+            nn.ReLU(),
             nn.Linear(decoder_3, 1),
         )
 

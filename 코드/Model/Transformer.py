@@ -1,23 +1,26 @@
 import math
+import torch
+import torch.nn as nn
 
-class TFModel(nn.Module):
+class Transformer(nn.Module):
     def __init__(self, emb_dim, window_size, out_dim, nhead, nlayers, dropout=0.5):
-        super(TFModel, self).__init__()
+        super(Transformer, self).__init__()
         self.encoder_layer = nn.TransformerEncoderLayer(d_model=emb_dim, nhead=nhead, dropout=dropout)
         self.transformer_encoder = nn.TransformerEncoder(self.encoder_layer, num_layers=nlayers) 
         
         self.pos_encoder = PositionalEncoding(emb_dim, dropout)
 
-        
         self.linear =  nn.Sequential(
             nn.Linear(emb_dim, emb_dim//2),
             nn.ReLU(),
-            nn.Linear(emb_dim//2, 1))
+            nn.Linear(emb_dim//2, 1)
+        )
 
         self.linear2 = nn.Sequential(
             nn.Linear(window_size, (window_size+out_dim)//2),
             nn.ReLU(),
-            nn.Linear((window_size+out_dim)//2, out_dim)) 
+            nn.Linear((window_size+out_dim)//2, out_dim)
+        ) 
 
     def generate_square_subsequent_mask(self, sz):
         mask = (torch.triu(torch.ones(sz, sz)) == 1).transpose(0, 1)
@@ -31,7 +34,6 @@ class TFModel(nn.Module):
         output = self.linear(output)[:,:,0]   # num * window_size
         output = self.linear2(output)
         return output
-
 
 class PositionalEncoding(nn.Module):
     def __init__(self, d_model, dropout=0.1, max_len=5000):

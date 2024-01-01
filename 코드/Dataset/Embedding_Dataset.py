@@ -11,7 +11,7 @@ class Embedding_Dataset(Dataset):
 
         apartment = table_merge[[cols for cols in table_merge.columns if cols not in ['aid','location','name','did','year','month','call_rate','m2','price']]]
         economy = table_merge[['call_rate','m2']]
-        price = table_merge[['price']]
+        price = table_merge[['price']] * 0.0001
 
         apartment_values = apartment.values
         economy_values = economy.values
