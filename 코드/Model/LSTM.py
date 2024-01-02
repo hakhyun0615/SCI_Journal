@@ -11,8 +11,8 @@ class LSTM(nn.Module):
     # input : num * window_size * emb_dim
     def forward(self, input):
         # hidden, cell : 1 * num * hid_dim
-        hidden = torch.FloatTensor(torch.randn(1,input.shape[0],self.hid_dim))
-        cell = torch.FloatTensor(torch.randn(1,input.shape[0],self.hid_dim))
+        hidden = torch.FloatTensor(torch.randn(1,input.shape[0],self.hid_dim)).to(input.device)
+        cell = torch.FloatTensor(torch.randn(1,input.shape[0],self.hid_dim)).to(input.device)
         hiddens, (hidden, cell) = self.lstm(input, (hidden, cell))  # hiddens : num * window_size * emb_dim
         y_hat = self.fc(hidden[0])   # num * 1  
         return y_hat, hidden, cell
