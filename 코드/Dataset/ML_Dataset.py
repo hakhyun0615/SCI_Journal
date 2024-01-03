@@ -49,7 +49,7 @@ class ML_Dataset(Dataset):
             price_tensor = torch.FloatTensor(price_values).to(DEVICE) # (204, 1)
 
             for i in range(apartment_complex_embedding_matrix_tensor.shape[0]-window_size):
-                if price_tensor[i+window_size, :] != 0:
+                if price_tensor[i+window_size, :] != 0: # 가격이 있는 것만 취급
                     for window in range(window_size):
                         apartment_complex_embedding_matrix_concat_tensor = torch.zeros(1, embedding_dim * window_size)
                         apartment_complex_embedding_matrix_concat_tensor[:, window*embedding_dim:(window+1)*embedding_dim] = apartment_complex_embedding_matrix_tensor[i+window:i+window+1, :]
