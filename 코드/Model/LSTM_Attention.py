@@ -3,10 +3,8 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 class LSTMAttention(nn.Module):
-    def __init__(self, LSTM_model, hid_dim, out_dim, device):
+    def __init__(self, LSTM_model, hid_dim, out_dim):
         super(LSTMAttention, self).__init__()
-        self.device = device
-
         self.LSTM_model = LSTM_model
         self.fc1 = nn.Linear(hid_dim + hid_dim, hid_dim)
         self.tanh = nn.Tanh()
