@@ -6,7 +6,15 @@ from sklearn.preprocessing import StandardScaler
 
 # ML, LSTM, NLinear, Transformer
 class Apartment_Complex_Dataset(Dataset):
-    def __init__(self, model, table_1, table_2, table_3, embedding_dim, window_size, WHICH, DEVICE):
+    def __init__(self, model, table_1, table_2, table_3, embedding_dim, window_size, ML_DL, TRAIN_TEST, DEVICE):
+        # train/test(test는 ML만)
+        if TRAIN_TEST == 'TRAIN':
+            time = 204
+        elif TRAIN_TEST == 'TEST':
+            time = 20
+        else:
+            raise ValueError("Invalid value for 'TRAIN_TEST'. It must be either 'TRAIN' or 'TEST'.")
+
         # 데이터프레임 복사본 생성
         table_1_copy = table_1.copy()
         table_2_copy = table_2.copy()
@@ -40,7 +48,7 @@ class Apartment_Complex_Dataset(Dataset):
         apartment_complexes_names = table_1_copy['name']
         for apartment_complex_location, apartment_complex_name in zip(apartment_complexes_locations, apartment_complexes_names): # 단지별로(702)
             apartment_complex_values = table_1_copy[(table_1_copy['name'] == apartment_complex_name) * (table_1_copy['location'] == apartment_complex_location)][[cols for cols in table_1_copy.columns if cols not in ['aid','location','name']]].values
-            apartment_complex_tensor = torch.FloatTensor(apartment_complex_values).to(DEVICE).repeat(204, 1)
+            apartment_complex_tensor = torch.FloatTensor(apartment_complex_values).to(DEVICE).repeat(time, 1)
             economy_values = table_2_copy[['call_rate','m2']].values
             economy_tensor = torch.FloatTensor(economy_values).to(DEVICE)
             encoder_input_tensor = torch.cat((apartment_complex_tensor, economy_tensor), dim=1) # 2006/01~2022/12까지(204) 12개의 features를 가지는 encoder_input_tensor 생성 # (204, 12)
@@ -55,14 +63,14 @@ class Apartment_Complex_Dataset(Dataset):
             apartment_complex_embedding_matrix_tensor = torch.FloatTensor(apartment_complex_embedding_matrix).to(DEVICE) # (204, 1024)
 
             apartment_complex_aid = table_1_copy[(table_1_copy['name'] == apartment_complex_name) * (table_1_copy['location'] == apartment_complex_location)]['aid'].squeeze()
-            price_values = pd.DataFrame({'did': range(0, 204)}).merge(table_3_copy[table_3_copy['aid'] == apartment_complex_aid][['did','price']], on='did', how='outer').fillna(0).set_index('did').values
+            price_values = pd.DataFrame({'did': range(0, time)}).merge(table_3_copy[table_3_copy['aid'] == apartment_complex_aid][['did','price']], on='did', how='outer').fillna(0).set_index('did').values
             price_tensor = torch.FloatTensor(price_values).to(DEVICE) # (204, 1)
 
-            if WHICH == 'DL':
+            if ML_DL == 'DL':
                 for i in range(apartment_complex_embedding_matrix_tensor.shape[0]-window_size):
                     apartment_complexes_embedding_matrix_with_window_size.append(apartment_complex_embedding_matrix_tensor[i:i+window_size, :])
                     apartment_complexes_price_with_window_size.append(price_tensor[i+window_size, :])
-            elif WHICH == 'ML':
+            elif ML_DL == 'ML':
                 for i in range(apartment_complex_embedding_matrix_tensor.shape[0]-window_size):
                     if price_tensor[i+window_size, :] != 0: # 가격이 있는 것만 취급
                         for window in range(window_size):
@@ -71,7 +79,7 @@ class Apartment_Complex_Dataset(Dataset):
                         apartment_complexes_embedding_matrix_with_window_size.append(apartment_complex_embedding_matrix_concat_tensor) # (1, 10240)
                         apartment_complexes_price_with_window_size.append(price_tensor[i+window_size, :]) # (1, )
             else:
-                raise ValueError("Invalid value for 'WHICH'. It must be either 'DL' or 'ML'.")
+                raise ValueError("Invalid value for 'ML_DL'. It must be either 'DL' or 'ML'.")
 
         self.apartment_complexes_embedding_matrix_with_window_size = apartment_complexes_embedding_matrix_with_window_size
         self.apartment_complexes_price_with_window_size = apartment_complexes_price_with_window_size
