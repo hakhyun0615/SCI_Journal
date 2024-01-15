@@ -30,10 +30,10 @@ class Transformer(nn.Module):
     # input : num * window_size * emb_dim
     def forward(self, src, srcmask):
         src = self.pos_encoder(src)      # num * window_size * emb_dim
-        output = self.transformer_encoder(src.transpose(0,1), srcmask).transpose(0,1)  # num * window_size * emb_dim
-        output = self.linear(output)[:,:,0]   # num * window_size
-        output = self.linear2(output)
-        return output
+        hidden = self.transformer_encoder(src.transpose(0,1), srcmask).transpose(0,1)  # num * window_size * emb_dim
+        hidden = self.linear(hidden)[:,:,0]   # num * window_size
+        output = self.linear2(hidden)
+        return output, hidden
 
 class PositionalEncoding(nn.Module):
     def __init__(self, d_model, dropout=0.1, max_len=5000):

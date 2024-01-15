@@ -25,6 +25,6 @@ class NLinear(nn.Module):
             output[:,i] = bn_output.squeeze()
 
         output += seq_last.squeeze()  # num * emb_dim  
-        output = self.Linear2(output)  # num * 1
+        outputs = self.Linear2(output)  # num * 1
         
-        return output
+        return outputs, output
