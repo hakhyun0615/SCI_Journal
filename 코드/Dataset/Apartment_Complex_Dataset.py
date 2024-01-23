@@ -54,7 +54,7 @@ class Apartment_Complex_Dataset(Dataset):
             economy_tensor = torch.FloatTensor(economy_values).to(DEVICE)
             encoder_input_tensor = torch.cat((apartment_complex_tensor, economy_tensor), dim=1) # 2006/01~2022/12까지(204) 12개의 features를 가지는 encoder_input_tensor 생성 # (204, 12)
 
-            if embedding_dim != 'None': # 임베딩 벡터를 사용할 때
+            if embedding_dim != 'None' and model != 'None': # 임베딩 벡터를 사용할 때
                 apartment_complex_embedding_matrix = np.zeros((encoder_input_tensor.shape[0], embedding_dim)) # (204, 1024)
                 with torch.no_grad():
                     for i in range(encoder_input_tensor.shape[0]): # 2006/01~2022/12까지 기간별로(204)
@@ -79,11 +79,9 @@ class Apartment_Complex_Dataset(Dataset):
                     apartment_complex_embedding_matrix_tensor = encoder_input_tensor
                 for i in range(apartment_complex_embedding_matrix_tensor.shape[0]-window_size):
                     if price_tensor[i+window_size, :] != 0: # 가격이 있는 것만 취급
-                        for window in range(window_size):
-                            if embedding_dim == 'None': # 임베딩 벡터가 없을 때
-                                apartment_complex_embedding_matrix_concat_tensor = torch.zeros(1, 12 * window_size)
-                                apartment_complex_embedding_matrix_concat_tensor[:, window*12:(window+1)*12] = apartment_complex_embedding_matrix_tensor[i+window:i+window+1, :]
-                            else:
+                        if embedding_dim == 'None': # 임베딩 벡터가 없을 때
+                            embedding_dim = 12
+                            for window in range(window_size):
                                 apartment_complex_embedding_matrix_concat_tensor = torch.zeros(1, embedding_dim * window_size)
                                 apartment_complex_embedding_matrix_concat_tensor[:, window*embedding_dim:(window+1)*embedding_dim] = apartment_complex_embedding_matrix_tensor[i+window:i+window+1, :]
                         apartment_complexes_embedding_matrix_with_window_size.append(apartment_complex_embedding_matrix_concat_tensor) # (1, 10240)
