@@ -2,9 +2,9 @@ import math
 import torch
 import torch.nn as nn
 
-class Transformer(nn.Module):
+class Transformer2(nn.Module):
     def __init__(self, emb_dim, window_size, out_dim, nhead, nlayers, dropout=0.5):
-        super(Transformer, self).__init__()
+        super(Transformer2, self).__init__()
         self.encoder_layer = nn.TransformerEncoderLayer(d_model=emb_dim, nhead=nhead, dropout=dropout)
         self.transformer_encoder = nn.TransformerEncoder(self.encoder_layer, num_layers=nlayers) 
         
@@ -13,13 +13,13 @@ class Transformer(nn.Module):
         self.linear =  nn.Sequential(
             nn.Linear(emb_dim, emb_dim//2),
             nn.ReLU(),
-            nn.Linear(emb_dim//2, 1)
+            nn.Linear(emb_dim//2, emb_dim)
         )
 
         self.linear2 = nn.Sequential(
-            nn.Linear(window_size, (window_size+out_dim)//2),
+            nn.Linear(emb_dim, (emb_dim+out_dim)//2),
             nn.ReLU(),
-            nn.Linear((window_size+out_dim)//2, out_dim)
+            nn.Linear((emb_dim+out_dim)//2, out_dim)
         ) 
 
     def generate_square_subsequent_mask(self, sz):
@@ -31,7 +31,7 @@ class Transformer(nn.Module):
     def forward(self, src, srcmask):
         src = self.pos_encoder(src)      # num * window_size * emb_dim
         hidden = self.transformer_encoder(src.transpose(0,1), srcmask).transpose(0,1)  # num * window_size * emb_dim
-        hidden = self.linear(hidden)[:,:,0]   # num * window_size
+        hidden = self.linear(hidden[:,-1,:])   # num * emb_dim
         output = self.linear2(hidden)
         return output, hidden
 
