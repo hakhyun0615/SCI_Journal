@@ -11,6 +11,14 @@ class RMSE(nn.Module):
     def forward(self, y, y_hat):
         return torch.sqrt(self.mse(y, y_hat) + self.eps)
 
+class MAE(nn.Module):
+    def __init__(self):
+        super(MAE,self).__init__()
+        self.mae = nn.L1Loss()
+
+    def forward(self, y, y_hat):
+        return self.mae(y, y_hat)
+
 def plot_train_val_losses(train_losses, val_losses):
     print(f'Min Validation Loss: {min(val_losses)}')
     plt.plot(train_losses[1:], label='Training Loss')
