@@ -21,8 +21,10 @@ class Apartment_Complex_Dataset(Dataset):
         table_3_copy = table_3.copy()
 
         # 정규화
-        table_1_copy[[cols for cols in table_1_copy.columns if cols not in ['aid','location','name']]] = StandardScaler().fit_transform(table_1_copy[[cols for cols in table_1_copy.columns if cols not in ['aid','location','name']]])
-        table_2_copy[['call_rate','m2']] = StandardScaler().fit_transform(table_2_copy[['call_rate','m2']])
+        scaler = StandardScaler()
+        table_1_copy[[cols for cols in table_1_copy.columns if cols not in ['aid','location','name']]] = scaler.fit_transform(table_1_copy[[cols for cols in table_1_copy.columns if cols not in ['aid','location','name']]])
+        scaler.fit(table_2_copy[[cols for cols in table_2_copy.columns if cols not in ['did','year','month']]][:135])
+        table_2_copy[[cols for cols in table_2_copy.columns if cols not in ['did','year','month']]] = scaler.transform(table_2_copy[[cols for cols in table_2_copy.columns if cols not in ['did','year','month']]])
         table_3_copy['price'] = table_3_copy['price'] * 0.0001 # 억 단위
 
         # 동 이름 바꾸기

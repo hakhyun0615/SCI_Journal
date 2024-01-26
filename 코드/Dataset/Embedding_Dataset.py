@@ -14,20 +14,17 @@ class Embedding_Dataset(Dataset):
             return ' '.join(parts)
         table_1['location'] = table_1['location'].apply(change_dongs)
 
+        scaler = StandardScaler()
+        table_1[[cols for cols in table_1.columns if cols not in ['aid','location','name']]] = scaler.fit_transform(table_1[[cols for cols in table_1.columns if cols not in ['aid','location','name']]])
+        scaler.fit(table_2[[cols for cols in table_2.columns if cols not in ['did','year','month']]][:135])
+        table_2[[cols for cols in table_2.columns if cols not in ['did','year','month']]] = scaler.transform(table_2[[cols for cols in table_2.columns if cols not in ['did','year','month']]])
+
         table_merge = pd.merge(table_1, table_3, how='left', on='aid')
         table_merge = pd.merge(table_merge, table_2, how='left', on='did')
+        table_merge.sort_values(by='did',inplace=True)
 
-        apartment = table_merge[[cols for cols in table_merge.columns if cols not in ['aid','location','name','did','year','month','call_rate','m2','price']]]
-        economy = table_merge[['call_rate','m2']]
-        price = table_merge[['price']] * 0.0001
-
-        apartment_values = apartment.values
-        economy_values = economy.values
-        price_values = price.values
-        
-        input_values = np.concatenate((apartment_values, economy_values), axis=1)
-        input_values = StandardScaler().fit_transform(input_values)
-        output_values = price_values
+        input_values = table_merge[[cols for cols in table_merge.columns if cols not in ['aid','location','name','did','year','month','price']]].values
+        output_values = table_merge[['price']].values * 0.0001
 
         self.input_tensor = torch.FloatTensor(input_values)
         self.output_tensor = torch.FloatTensor(output_values)
