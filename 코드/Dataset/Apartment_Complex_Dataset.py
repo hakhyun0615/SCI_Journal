@@ -81,9 +81,9 @@ class Apartment_Complex_Dataset(Dataset):
                     if price_tensor[i+window_size, :] != 0: # 가격이 있는 것만 취급
                         if embedding_dim == 'None': # 임베딩 벡터가 없을 때
                             embedding_dim = 12
-                            for window in range(window_size):
-                                apartment_complex_embedding_matrix_concat_tensor = torch.zeros(1, embedding_dim * window_size)
-                                apartment_complex_embedding_matrix_concat_tensor[:, window*embedding_dim:(window+1)*embedding_dim] = apartment_complex_embedding_matrix_tensor[i+window:i+window+1, :]
+                        for window in range(window_size):
+                            apartment_complex_embedding_matrix_concat_tensor = torch.zeros(1, embedding_dim * window_size)
+                            apartment_complex_embedding_matrix_concat_tensor[:, window*embedding_dim:(window+1)*embedding_dim] = apartment_complex_embedding_matrix_tensor[i+window:i+window+1, :]
                         apartment_complexes_embedding_matrix_with_window_size.append(apartment_complex_embedding_matrix_concat_tensor) # (1, 10240)
                         apartment_complexes_price_with_window_size.append(price_tensor[i+window_size, :]) # (1, )
             else:
