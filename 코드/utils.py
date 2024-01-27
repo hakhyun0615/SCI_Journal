@@ -9,13 +9,14 @@ class RMSE(nn.Module):
     def forward(self, y, y_hat):
         return torch.sqrt(self.mse(y, y_hat))
 
-def plot_train_val_losses(train_losses, val_losses, save_path):
+def save_train_val_losses(train_losses, val_losses, save_path):
     print(f'Min Train Loss: {min(train_losses)}')
     print(f'Min Validation Loss: {min(val_losses)}')
-    plt.plot(train_losses[1:], label='Training Loss')
-    plt.plot(val_losses[1:], label='Validation Loss')
-    plt.xlabel('Epoch')
-    plt.ylabel('Loss')
-    plt.title('Training and Validation Losses')
-    plt.legend()
-    plt.savefig(save_path)
+    
+    with open(f'{save_path}_train_losses.txt', 'w') as f:
+        for item in train_losses:
+            f.write("%s\n" % item)
+
+    with open(f'{save_path}_val_losses.txt', 'w') as f:
+        for item in val_losses:
+            f.write("%s\n" % item)
