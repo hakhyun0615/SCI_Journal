@@ -5,15 +5,7 @@ from torch.utils.data import Dataset
 from sklearn.preprocessing import StandardScaler
 
 class Dong_Dataset(Dataset):
-    def __init__(self, model, table_1, table_2, table_3, embedding_dim, window_size, TRAIN_TEST, DEVICE):
-        # train/test
-        if TRAIN_TEST == 'TRAIN':
-            time = 204
-        elif TRAIN_TEST == 'TEST':
-            time = 20
-        else:
-            raise ValueError("Invalid value for 'TRAIN_TEST'. It must be either 'TRAIN' or 'TEST'.")
-
+    def __init__(self, model, table_1, table_2, table_3, embedding_dim, window_size, DEVICE):
         # 데이터프레임 복사본 생성
         table_1_copy = table_1.copy()
         table_2_copy = table_2.copy()
@@ -70,32 +62,32 @@ class Dong_Dataset(Dataset):
             economy_values = table_2_copy[['call_rate','m2']].values # 경제 지표 값들 # (204/20, 2)
             economy_tensor = torch.FloatTensor(economy_values).to(DEVICE) # 경제 지표 텐서 변환
 
-            encoder_input_tensors = torch.zeros(dong_apartment_complexes_values.shape[0], time, 12).to(DEVICE) # 인코더 입력 텐서들 초기화(인코더 입력 텐서 여러개) # (동 안의 단지 개수, 204(시점), 12)
+            encoder_input_tensors = torch.zeros(dong_apartment_complexes_values.shape[0], len(table_2_copy), 12).to(DEVICE) # 인코더 입력 텐서들 초기화(인코더 입력 텐서 여러개) # (동 안의 단지 개수, 204(시점), 12)
             for i, dong_apartment_complex_values in enumerate(dong_apartment_complexes_values):
-                dong_apartment_complex_tensor = torch.FloatTensor(dong_apartment_complex_values).to(DEVICE).repeat(time,1) 
+                dong_apartment_complex_tensor = torch.FloatTensor(dong_apartment_complex_values).to(DEVICE).repeat(len(table_2_copy),1) 
                 encoder_input_tensor = torch.cat((dong_apartment_complex_tensor, economy_tensor), dim=1)
                 encoder_input_tensors[i] = encoder_input_tensor
 
             if embedding_dim != 'None': # 임베딩 벡터를 사용할 때
                 with torch.no_grad():
-                    dong_apartment_complexes_embedding_matrixes = torch.zeros(encoder_input_tensors.shape[0], time, embedding_dim) # (동 안의 단지 개수, 204/20, 1024)
+                    dong_apartment_complexes_embedding_matrixes = torch.zeros(encoder_input_tensors.shape[0], len(table_2_copy), embedding_dim) # (동 안의 단지 개수, 204/20, 1024)
                     for i in range(encoder_input_tensors.shape[0]): # 동 안의 단지 (204/20, 1024)
-                        apartment_complex_embedding_matrix = torch.zeros(time, embedding_dim) # (204/20, 1024)
-                        for j in range(time): # 시점
+                        apartment_complex_embedding_matrix = torch.zeros(len(table_2_copy), embedding_dim) # (204/20, 1024)
+                        for j in range(len(table_2_copy)): # 시점
                             apartment_complex_embedding_vector = model.encoder(encoder_input_tensors[i][j].unsqueeze(0)).squeeze() # (1024, )
                             apartment_complex_embedding_matrix[j] = apartment_complex_embedding_vector
                         dong_apartment_complexes_embedding_matrixes[i] = apartment_complex_embedding_matrix
 
             # dong_apartment_complexes_prices(동 안의 단지마다 가격 구한 뒤 리스트 형식으로 모으기) 완성 # (동 안의 단지 개수, 204/20, 1)
             dong_apartment_complexes_aids = table_1_copy[table_1_copy['dong'] == dong]['aid'].values # (동 안의 단지 개수, )
-            dong_apartment_complexes_prices = torch.zeros(dong_apartment_complexes_aids.shape[0], time, 1).to(DEVICE) # (동 안의 단지 개수, 204/20, 1)
+            dong_apartment_complexes_prices = torch.zeros(dong_apartment_complexes_aids.shape[0], len(table_2_copy), 1).to(DEVICE) # (동 안의 단지 개수, 204/20, 1)
             for i, dong_apartment_complex_aid in zip(range(dong_apartment_complexes_aids.shape[0]), dong_apartment_complexes_aids): # 동 안의 단지 개수, 동 안의 단지들의 aids
-                dong_apartment_complexes_prices[i] = torch.from_numpy(pd.DataFrame({'did': range(0, time)}).merge(table_3_copy[table_3_copy['aid'] == dong_apartment_complex_aid][['did','price']], on='did', how='outer').fillna(0).set_index('did').values) # (204/20, 1)
+                dong_apartment_complexes_prices[i] = torch.from_numpy(pd.DataFrame({'did': range(0, len(table_2_copy))}).merge(table_3_copy[table_3_copy['aid'] == dong_apartment_complex_aid][['did','price']], on='did', how='outer').fillna(0).set_index('did').values) # (204/20, 1)
 
             if embedding_dim == 'None': # 임베딩 벡터가 없을 때
                 dong_apartment_complexes_embedding_matrixes = encoder_input_tensors
             # dong_apartment_complexes_embedding_matrixes와 dong_apartment_complexes_prices window_size로 나누기
-            for i in range(time-window_size): # window_size 고려한 시점(0~199/19)
+            for i in range(len(table_2_copy)-window_size): # window_size 고려한 시점(0~199/19)
                 if embedding_dim == 'None': # 임베딩 벡터가 없을 때
                     dong_apartment_complexes_embedding_matrixes_with_window_size = torch.zeros(max_apartment_complexes, window_size, 12)
                 else:
