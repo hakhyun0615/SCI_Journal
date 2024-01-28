@@ -31,6 +31,8 @@ class MAPE(nn.Module):
 def save_train_test_losses(train_losses, test_losses, save_path):
     print(f'Min Train Loss: {min(train_losses)}')
     print(f'Min Test Loss: {min(test_losses)}')
+
+    plt.clf()
     plt.plot(train_losses, label='Train Loss')
     plt.plot(test_losses, label='Test Loss')
     plt.xlabel('Epoch')
