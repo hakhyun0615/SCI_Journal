@@ -3,7 +3,7 @@ import torch
 import torch.nn as nn
 
 class Transformer(nn.Module):
-    def __init__(self, emb_dim, window_size, out_dim, nhead, nlayers, dropout=0.5):
+    def __init__(self, emb_dim, out_dim, nhead, nlayers, dropout=0.5):
         super(Transformer, self).__init__()
         self.encoder_layer = nn.TransformerEncoderLayer(d_model=emb_dim, nhead=nhead, dropout=dropout)
         self.transformer_encoder = nn.TransformerEncoder(self.encoder_layer, num_layers=nlayers) 
