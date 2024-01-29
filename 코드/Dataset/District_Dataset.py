@@ -109,6 +109,9 @@ class District_Dataset(Dataset):
                 districts_apartment_complexes_embedding_matrixes_with_window_size.append(district_apartment_complexes_embedding_matrixes_with_window_size) # (38, window_size, 1024)
                 districts_apartment_complexes_prices_with_window_size.append(district_apartment_complexes_prices_with_window_size) # (38/24, 1)
 
+        # 동마다 시점들 -> 시점들마다 동 
+        districts_apartment_complexes_embedding_matrixes_with_window_size = torch.stack(districts_apartment_complexes_embedding_matrixes_with_window_size).reshape(len(districts), len(table_2_copy)-window_size, max_apartment_complexes, window_size, embedding_dim).permute(1, 0, 2, 3, 4).reshape(len(districts)*(len(table_2_copy)-window_size), max_apartment_complexes, window_size, embedding_dim)
+
         self.districts_apartment_complexes_embedding_matrixes_with_window_size = districts_apartment_complexes_embedding_matrixes_with_window_size
         self.districts_apartment_complexes_embedding_matrixes_with_window_size_num = districts_apartment_complexes_embedding_matrixes_with_window_size_num
         self.districts_apartment_complexes_embedding_matrixes_with_window_size_index = districts_apartment_complexes_embedding_matrixes_with_window_size_index

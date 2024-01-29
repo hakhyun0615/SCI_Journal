@@ -22,13 +22,13 @@ def mae(y_true, y_pred):
 def mape(y_true, y_pred):
     return torch.mean(torch.abs((y_true - y_pred) / y_true)) * 100
 
-def save_train_test_losses(train_losses, test_losses, save_path):
+def save_train_val_losses(train_losses, val_losses, save_path):
     print(f'Min Train Loss: {min(train_losses)}')
-    print(f'Min Test Loss: {min(test_losses)}')
+    print(f'Min Val Loss: {min(val_losses)}')
 
     plt.clf()
     plt.plot(train_losses, label='Train Loss')
-    plt.plot(test_losses, label='Test Loss')
+    plt.plot(val_losses, label='Val Loss')
     plt.xlabel('Epoch')
     plt.ylabel('Loss')
     plt.legend()
@@ -38,6 +38,6 @@ def save_train_test_losses(train_losses, test_losses, save_path):
         for item in train_losses:
             f.write("%s\n" % item)
 
-    with open(f'{save_path}_test_losses.txt', 'w') as f:
-        for item in test_losses:
+    with open(f'{save_path}_val_losses.txt', 'w') as f:
+        for item in val_losses:
             f.write("%s\n" % item)
