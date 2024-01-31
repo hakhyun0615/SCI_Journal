@@ -43,10 +43,10 @@ class Apartment_Complex_Dataset(Dataset):
         apartment_complexes_names = table_1_copy['name']
         for apartment_complex_location, apartment_complex_name in zip(apartment_complexes_locations, apartment_complexes_names): # 단지별로(702)
             apartment_complex_values = table_1_copy[(table_1_copy['name'] == apartment_complex_name) * (table_1_copy['location'] == apartment_complex_location)][[cols for cols in table_1_copy.columns if cols not in ['aid','location','name']]].values
-            apartment_complex_tensor = torch.FloatTensor(apartment_complex_values).to(DEVICE).repeat(len(table_2_copy), 1)
+            apartment_complex_tensor = torch.FloatTensor(apartment_complex_values).to(DEVICE).repeat(len(table_2_copy), 1).type(torch.float32)
             economy_values = table_2_copy[['call_rate','m2']].values
-            economy_tensor = torch.FloatTensor(economy_values).to(DEVICE)
-            encoder_input_tensor = torch.cat((apartment_complex_tensor, economy_tensor), dim=1) # 2006/01~2022/12까지(204) 12개의 features를 가지는 encoder_input_tensor 생성 # (204, 12)
+            economy_tensor = torch.FloatTensor(economy_values).to(DEVICE).type(torch.float32)
+            encoder_input_tensor = torch.cat((apartment_complex_tensor, economy_tensor), dim=1).type(torch.float32) # 2006/01~2022/12까지(204) 12개의 features를 가지는 encoder_input_tensor 생성 # (204, 12)
 
             if embedding_dim != 'None' and model != 'None': # 임베딩 벡터를 사용할 때
                 apartment_complex_embedding_matrix = np.zeros((encoder_input_tensor.shape[0], embedding_dim)) # (204, 1024)
@@ -56,21 +56,21 @@ class Apartment_Complex_Dataset(Dataset):
                         if apartment_complex_embedding_vector.is_cuda:
                             apartment_complex_embedding_vector = apartment_complex_embedding_vector.cpu()
                         apartment_complex_embedding_matrix[i] = apartment_complex_embedding_vector.numpy()
-                apartment_complex_embedding_matrix_tensor = torch.FloatTensor(apartment_complex_embedding_matrix).to(DEVICE) # (204, 1024)
+                apartment_complex_embedding_matrix_tensor = torch.FloatTensor(apartment_complex_embedding_matrix).to(DEVICE).type(torch.float32) # (204, 1024)
 
             apartment_complex_aid = table_1_copy[(table_1_copy['name'] == apartment_complex_name) * (table_1_copy['location'] == apartment_complex_location)]['aid'].squeeze()
             price_values = pd.DataFrame({'did': range(0, len(table_2_copy))}).merge(table_3_copy[table_3_copy['aid'] == apartment_complex_aid][['did','price']], on='did', how='outer').fillna(0).set_index('did').values
-            price_tensor = torch.FloatTensor(price_values).to(DEVICE) # (204, 1)
+            price_tensor = torch.FloatTensor(price_values).to(DEVICE).type(torch.float32) # (204, 1)
 
             if ML_DL == 'DL':
                 if embedding_dim == 'None': # 임베딩 벡터가 없을 때
-                    apartment_complex_embedding_matrix_tensor = encoder_input_tensor
+                    apartment_complex_embedding_matrix_tensor = encoder_input_tensor.type(torch.float32)
                 for i in range(apartment_complex_embedding_matrix_tensor.shape[0]-window_size):
                     apartment_complexes_embedding_matrix_with_window_size.append(apartment_complex_embedding_matrix_tensor[i:i+window_size, :])
                     apartment_complexes_price_with_window_size.append(price_tensor[i+window_size, :])
             elif ML_DL == 'ML':
                 if embedding_dim == 'None': # 임베딩 벡터가 없을 때
-                    apartment_complex_embedding_matrix_tensor = encoder_input_tensor
+                    apartment_complex_embedding_matrix_tensor = encoder_input_tensor.type(torch.float32)
                 for i in range(apartment_complex_embedding_matrix_tensor.shape[0]-window_size):
                     if price_tensor[i+window_size, :] != 0: # 가격이 있는 것만 취급
                         if embedding_dim == 'None': # 임베딩 벡터가 없을 때

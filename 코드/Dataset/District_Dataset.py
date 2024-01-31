@@ -68,9 +68,9 @@ class District_Dataset(Dataset):
             # dong_apartment_complexes_embedding_matrixes(동 안의 단지마다 임베팅 matrix 구한 뒤 리스트 형식으로 모으기) 완성 # (동 안의 단지 개수, 204, 6)
             district_apartment_complexes_values = table_1_copy[table_1_copy['district'] == district][[cols for cols in table_1_copy.columns if cols not in ['aid','location','name','district']]].values # 하나의 동 안의 아파트 단지 값들 # (동 안의 단지 개수, 10)
             economy_values = table_2_copy[['call_rate','m2']].values # 경제 지표 값들 # (204/20, 2)
-            economy_tensor = torch.FloatTensor(economy_values).to(DEVICE) # 경제 지표 텐서 변환
+            economy_tensor = torch.FloatTensor(economy_values).to(DEVICE).type(torch.float32) # 경제 지표 텐서 변환
 
-            encoder_input_tensors = torch.zeros(district_apartment_complexes_values.shape[0], len(table_2_copy), 12).to(DEVICE) # 인코더 입력 텐서들 초기화(인코더 입력 텐서 여러개) # (동 안의 단지 개수, 204(시점), 12)
+            encoder_input_tensors = torch.zeros(district_apartment_complexes_values.shape[0], len(table_2_copy), 12).to(DEVICE).type(torch.float32) # 인코더 입력 텐서들 초기화(인코더 입력 텐서 여러개) # (동 안의 단지 개수, 204(시점), 12)
             for i, district_apartment_complex_values in enumerate(district_apartment_complexes_values):
                 district_apartment_complex_tensor = torch.FloatTensor(district_apartment_complex_values).to(DEVICE).repeat(len(table_2_copy),1) 
                 encoder_input_tensor = torch.cat((district_apartment_complex_tensor, economy_tensor), dim=1)
@@ -78,18 +78,18 @@ class District_Dataset(Dataset):
 
             if embedding_dim != 'None': # 임베딩 벡터를 사용할 때
                 with torch.no_grad():
-                    district_apartment_complexes_embedding_matrixes = torch.zeros(encoder_input_tensors.shape[0], len(table_2_copy), embedding_dim) # (동 안의 단지 개수, 204/20, 1024)
+                    district_apartment_complexes_embedding_matrixes = torch.zeros(encoder_input_tensors.shape[0], len(table_2_copy), embedding_dim).type(torch.float32) # (동 안의 단지 개수, 204/20, 1024)
                     for i in range(encoder_input_tensors.shape[0]): # 동 안의 단지 (204/20, 1024)
                         district_apartment_complexes_embedding_matrixes[i] = model.encoder(encoder_input_tensors[i])
 
             # dong_apartment_complexes_prices(동 안의 단지마다 가격 구한 뒤 리스트 형식으로 모으기) 완성 # (동 안의 단지 개수, 204/20, 1)
             district_apartment_complexes_aids = table_1_copy[table_1_copy['district'] == district]['aid'].values # (동 안의 단지 개수, )
-            district_apartment_complexes_prices = torch.zeros(district_apartment_complexes_aids.shape[0], len(table_2_copy), 1).to(DEVICE) # (동 안의 단지 개수, 204/20, 1)
+            district_apartment_complexes_prices = torch.zeros(district_apartment_complexes_aids.shape[0], len(table_2_copy), 1).to(DEVICE).type(torch.float32) # (동 안의 단지 개수, 204/20, 1)
             for i, district_apartment_complex_aid in zip(range(district_apartment_complexes_aids.shape[0]), district_apartment_complexes_aids): # 동 안의 단지 개수, 동 안의 단지들의 aids
                 district_apartment_complexes_prices[i] = torch.from_numpy(pd.DataFrame({'did': range(0, len(table_2_copy))}).merge(table_3_copy[table_3_copy['aid'] == district_apartment_complex_aid][['did','price']], on='did', how='outer').fillna(0).set_index('did').values) # (204/20, 1)
 
             if embedding_dim == 'None': # 임베딩 벡터가 없을 때
-                district_apartment_complexes_embedding_matrixes = encoder_input_tensors
+                district_apartment_complexes_embedding_matrixes = encoder_input_tensors.type(torch.float32)
                 
             # dong_apartment_complexes_embedding_matrixes와 dong_apartment_complexes_prices window_size로 나누기
             for i in range(len(table_2_copy)-window_size): # window_size 고려한 시점(0~199/19)

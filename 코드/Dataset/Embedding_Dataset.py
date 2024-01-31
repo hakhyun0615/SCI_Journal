@@ -26,8 +26,8 @@ class Embedding_Dataset(Dataset):
         input_values = table_merge[[cols for cols in table_merge.columns if cols not in ['aid','location','name','did','year','month','price']]].values
         output_values = table_merge[['price']].values * 0.0001
 
-        self.input_tensor = torch.FloatTensor(input_values).to(DEVICE)
-        self.output_tensor = torch.FloatTensor(output_values).to(DEVICE)
+        self.input_tensor = torch.FloatTensor(input_values).to(DEVICE).type(torch.float32)
+        self.output_tensor = torch.FloatTensor(output_values).to(DEVICE).type(torch.float32)
 
     def __getitem__(self, i):
         return self.input_tensor[i], self.output_tensor[i]
