@@ -109,11 +109,8 @@ class District_Dataset(Dataset):
                 districts_apartment_complexes_prices_with_window_size.append(district_apartment_complexes_prices_with_window_size) # (38/24, 1)
 
         # 동마다 시점들 -> 시점들마다 동 
-        districts_apartment_complexes_embedding_matrixes_with_window_size = torch.stack(districts_apartment_complexes_embedding_matrixes_with_window_size)
-        districts_apartment_complexes_embedding_matrixes_with_window_size = districts_apartment_complexes_embedding_matrixes_with_window_size.reshape(len(districts), len(table_2_copy)-window_size, max_apartment_complexes, window_size, embedding_dim)
-        districts_apartment_complexes_embedding_matrixes_with_window_size = districts_apartment_complexes_embedding_matrixes_with_window_size.permute(1, 0, 2, 3, 4)
-        districts_apartment_complexes_embedding_matrixes_with_window_size = districts_apartment_complexes_embedding_matrixes_with_window_size.reshape(len(districts)*(len(table_2_copy)-window_size), max_apartment_complexes, window_size, embedding_dim)
-        districts_apartment_complexes_embedding_matrixes_with_window_size = list(torch.unbind(districts_apartment_complexes_embedding_matrixes_with_window_size))
+        grouped_districts_apartment_complexes_embedding_matrixes_with_window_size = [districts_apartment_complexes_embedding_matrixes_with_window_size[i:i+len(table_2_copy)-window_size] for i in range(0,len(districts_apartment_complexes_embedding_matrixes_with_window_size),len(table_2_copy)-window_size)]
+        districts_apartment_complexes_embedding_matrixes_with_window_size = [item for group in zip(*grouped_districts_apartment_complexes_embedding_matrixes_with_window_size) for item in group]
 
         self.districts_apartment_complexes_embedding_matrixes_with_window_size = districts_apartment_complexes_embedding_matrixes_with_window_size
         self.districts_apartment_complexes_embedding_matrixes_with_window_size_num = districts_apartment_complexes_embedding_matrixes_with_window_size_num
