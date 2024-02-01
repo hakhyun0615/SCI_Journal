@@ -9,18 +9,15 @@ class RMSE(nn.Module):
     def forward(self, y_true, y_pred):
         return torch.sqrt(self.mse(y_true, y_pred))
 
-def rmse(y_true, y_pred):
+def rmse(y_pred, y_true):
     mse = torch.mean((y_true - y_pred) ** 2)
     return torch.sqrt(mse)
 
-def mse(y_true, y_pred):
+def mse(y_pred, y_true):
     return torch.mean((y_true - y_pred) ** 2)
 
-def mae(y_true, y_pred):
+def mae(y_pred, y_true):
     return torch.mean(torch.abs(y_true - y_pred))
-
-def mape(y_true, y_pred):
-    return torch.mean(torch.abs((y_true - y_pred) / y_true)) * 100
 
 def save_train_val_losses(train_losses, val_losses, save_path):
     print(f'Min Train Loss: {min(train_losses)}')
