@@ -9,11 +9,11 @@ class RMSE(nn.Module):
     def forward(self, y_true, y_pred):
         return torch.sqrt(self.mse(y_true, y_pred))
 
-def rmse(y_pred, y_true):
+def rmse(y_pred, y_true): 
     mse = torch.mean((y_true - y_pred) ** 2)
     return torch.sqrt(mse)
 
-def mse(y_pred, y_true):
+def mse(y_pred, y_true): 
     return torch.mean((y_true - y_pred) ** 2)
 
 def mae(y_pred, y_true):
