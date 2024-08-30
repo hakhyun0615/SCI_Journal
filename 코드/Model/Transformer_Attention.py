@@ -34,3 +34,8 @@ class TransformerAttention(nn.Module):
 
         y_hat = self.fc2(s) # oud_dim
         return y_hat
+    
+
+
+
+    

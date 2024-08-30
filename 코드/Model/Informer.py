@@ -93,4 +93,4 @@ class Informer(nn.Module):
         enc_out = self.enc_embedding(x_enc)
         enc_out = self.encoder(enc_out)
         dec_out = self.projection(enc_out)
-        return dec_out[:, -self.pred_len:, :]  # [B, L, D]
+        return dec_out[:, -self.pred_len:, :]
