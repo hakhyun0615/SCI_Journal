@@ -65,12 +65,11 @@ class Encoder(nn.Module):
         return x
 
 class Informer(nn.Module):
-    def __init__(self, enc_in, c_out, seq_len, out_len, 
+    def __init__(self, enc_in, out_dim, seq_len, 
                  factor=5, d_model=512, n_heads=8, e_layers=3, 
                  dropout=0.0, activation='gelu'):
         super(Informer, self).__init__()
         self.seq_len = seq_len
-        self.pred_len = out_len
 
         # Encoding
         self.enc_embedding = nn.Linear(enc_in, d_model)
@@ -86,11 +85,15 @@ class Informer(nn.Module):
             norm_layer=torch.nn.LayerNorm(d_model)
         )
         
-        # Decoder
-        self.projection = nn.Linear(d_model, c_out, bias=True)
+        # Decoder (2D output projection)
+        self.projection = nn.Linear(d_model * seq_len, out_dim, bias=True)
         
     def forward(self, x_enc):
         enc_out = self.enc_embedding(x_enc)
         enc_out = self.encoder(enc_out)
-        dec_out = self.projection(enc_out)
-        return dec_out[:, -self.pred_len:, :]
+        
+        # Flatten the sequence dimension and project to 2D output
+        enc_out = enc_out.view(enc_out.size(0), -1)  # (batch_size, seq_len * d_model)
+        dec_out = self.projection(enc_out)  # (batch_size, output_dim)
+        
+        return dec_out

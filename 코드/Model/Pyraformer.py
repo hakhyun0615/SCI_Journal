@@ -39,5 +39,9 @@ class Pyraformer(nn.Module):
         for layer in self.layers:
             x = layer(x)
         x = x.permute(1, 0, 2)  # (batch, seq_len, d_model)
-        x = self.output_proj(x)
+
+        # Pooling across the sequence dimension to reduce it
+        x = x.mean(dim=1)  # (batch, d_model)
+
+        x = self.output_proj(x)  # (batch, output_dim)
         return x
