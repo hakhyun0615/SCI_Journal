@@ -1,6 +1,9 @@
 # SCI Journal
 This repository contains the source code for the SCI Journal.
 
+## Link
+https://papers.ssrn.com/sol3/papers.cfm?abstract_id=4971984
+
 ## Title
 TSA-GA Net: A Dual Attention Mechanism for Predicting Real Estate Transaction Prices
 
