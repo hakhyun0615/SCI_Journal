@@ -1,0 +1,11 @@
+﻿구분 (Category),값 (Value)
+"총 아파트 단지 수 (Total Apartment Complexes, M)",705개
+"총 행정구역 수 (Total Sub-districts, N)",138개
+총 구 수 (Total Districts),24개
+분석 시작일 (Analysis Start Date),2006-01-01
+분석 종료일 (Analysis End Date),2023-10-31
+총 분석 기간 (Total Analysis Period),18년
+총 거래 건수 (Total Transactions),"60,369건"
+연평균 거래 건수 (Average Annual Transactions),"3,353건/년"
+아파트 단지당 평균 거래 건수 (Avg Transactions per Complex),85건/단지
+행정구역당 평균 거래 건수 (Avg Transactions per Sub-district),437건/동

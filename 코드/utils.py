@@ -19,6 +19,18 @@ def mse(y_pred, y_true):
 def mae(y_pred, y_true):
     return torch.mean(torch.abs(y_true - y_pred))
 
+def r2_score(y_pred, y_true):
+    y_mean = torch.mean(y_true)
+    ss_total = torch.sum((y_true - y_mean) ** 2)
+    ss_res = torch.sum((y_true - y_pred) ** 2)
+    return 1 - ss_res / ss_total
+
+def nse(y_pred, y_true):
+    numerator = torch.sum((y_true - y_pred) ** 2)
+    denominator = torch.sum((y_true - torch.mean(y_true)) ** 2)
+    return 1 - numerator / denominator
+
+
 def save_train_val_losses(train_losses, val_losses, save_path):
     print(f'Min Train Loss: {min(train_losses)}')
     print(f'Min Val Loss: {min(val_losses)}')
