@@ -50,3 +50,25 @@ def save_train_val_losses(train_losses, val_losses, save_path):
     with open(f'{save_path}_val_losses.txt', 'w') as f:
         for item in val_losses:
             f.write("%s\n" % item)
+
+
+def early_stops(val_losses, consecutive_val_loss_increases, max_consecutive_val_loss_increases):
+    if len(val_losses) > 1 and val_losses[-1] >= val_losses[-2]:
+        consecutive_val_loss_increases += 1
+        if consecutive_val_loss_increases >= max_consecutive_val_loss_increases:
+            return True, consecutive_val_loss_increases
+        else:
+            return False, consecutive_val_loss_increases
+    else:
+        consecutive_val_loss_increases = 0
+        return False, consecutive_val_loss_increases
+    
+def plot_train_val_losses(train_losses, val_losses):
+    print(f'Min Validation Loss: {min(val_losses)}')
+    plt.plot(train_losses[1:], label='Training Loss')
+    plt.plot(val_losses[1:], label='Validation Loss')
+    plt.xlabel('Epoch')
+    plt.ylabel('Loss')
+    plt.title('Training and Validation Losses')
+    plt.legend()
+    plt.show()
