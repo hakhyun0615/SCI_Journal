@@ -3,9 +3,17 @@ import pandas as pd
 import torch
 from torch.utils.data import Dataset
 from sklearn.preprocessing import StandardScaler
+import gc  # 메모리 정리용
 
 class District_Dataset(Dataset):
     def __init__(self, model, table_1, table_2, table_3, embedding_dim, window_size, SUB, DEVICE):
+        self.embedding_dim = embedding_dim
+        self.window_size = window_size
+        self.DEVICE = DEVICE
+        
+        # 메모리 효율을 위해 CPU에서 처리 후 필요할 때만 GPU로 이동
+        self.device_cpu = torch.device('cpu')
+        
         # 데이터프레임 복사본 생성
         table_1_copy = table_1.copy()
         table_2_copy = table_2.copy()
@@ -37,89 +45,127 @@ class District_Dataset(Dataset):
             districts = table_1_copy['district'].unique()
         else:
             raise ValueError("Invalid value for 'SUB'. It must be either True or False.")
-            
-
-        # (동별) 최대 단지 개수
+                # (동별) 최대 단지 개수
         # TRAIN: 38 
         # TEST: 24
         max_apartment_complexes = max(table_1_copy.groupby('district')['name'].count())
 
-        # (전체 동 개수 * 204-window_size, 최대 단지 개수, window_size, embedding_dim) 
-        # TRAIN: (22698, 38, 10, 1024)
-        # TEST: (1120, 24, 10, 1024)
-        districts_apartment_complexes_embedding_matrixes_with_window_size = [] 
-        # 단지 개수 
-        # (전체 동 개수 * 204-window_size, 1)
-        districts_apartment_complexes_embedding_matrixes_with_window_size_num = [] 
-        # y 값이 있는 단지 index 
-        # (전체 동 개수 * 204-window_size, ?)
-        districts_apartment_complexes_embedding_matrixes_with_window_size_index = [] 
-        # (전체 동 개수 * 204-window_size, 최대 단지 개수, 1)
-        # TRAIN: (22698, 38, 1)
-        # TEST: (1120, 24, 1)
-        districts_apartment_complexes_prices_with_window_size = [] 
+        # 메모리 효율을 위해 데이터를 인덱스 기반으로 저장
+        self.data_indices = []  # (district_idx, time_idx) 튜플 저장
+        self.district_data = {}  # district별 전처리된 데이터 저장
+        self.max_apartment_complexes = max_apartment_complexes
+          # 경제 지표는 공통으로 사용되므로 미리 준비 (CPU에서)
+        economy_values = table_2_copy[['call_rate','m2']].values
+        self.economy_tensor = torch.FloatTensor(economy_values).to(self.device_cpu)
 
         if model != 'None': # 임베딩 벡터를 사용할 때
             model.eval()
-            model.to(DEVICE)
+            # 모델을 GPU에 유지 (원래 DEVICE 사용)
+            self.model = model.to(DEVICE)
+        else:
+            self.model = None
 
-        # 동 마다
-        for district in districts: 
-            # dong_apartment_complexes_embedding_matrixes(동 안의 단지마다 임베팅 matrix 구한 뒤 리스트 형식으로 모으기) 완성 # (동 안의 단지 개수, 204, 6)
-            district_apartment_complexes_values = table_1_copy[table_1_copy['district'] == district][[cols for cols in table_1_copy.columns if cols not in ['aid','location','name','district']]].values # 하나의 동 안의 아파트 단지 값들 # (동 안의 단지 개수, 10)
-            economy_values = table_2_copy[['call_rate','m2']].values # 경제 지표 값들 # (204/20, 2)
-            economy_tensor = torch.FloatTensor(economy_values).to(DEVICE).type(torch.float32) # 경제 지표 텐서 변환
+        # 동 마다 전처리하여 district_data에 저장
+        for district_idx, district in enumerate(districts): 
+            # district별 아파트 단지 정보 추출
+            district_apartment_complexes_values = table_1_copy[table_1_copy['district'] == district][[cols for cols in table_1_copy.columns if cols not in ['aid','location','name','district']]].values
+            district_apartment_complexes_aids = table_1_copy[table_1_copy['district'] == district]['aid'].values
+            
+            # district별 가격 정보 전처리 (CPU에서)
+            district_apartment_complexes_prices = torch.zeros(district_apartment_complexes_aids.shape[0], len(table_2_copy), 1, device=self.device_cpu)
+            for i, district_apartment_complex_aid in enumerate(district_apartment_complexes_aids):
+                price_data = pd.DataFrame({'did': range(0, len(table_2_copy))}).merge(
+                    table_3_copy[table_3_copy['aid'] == district_apartment_complex_aid][['did','price']], 
+                    on='did', how='outer').fillna(0).set_index('did').values
+                district_apartment_complexes_prices[i] = torch.from_numpy(price_data)
+            
+            # district 데이터 저장 (CPU에 유지)
+            self.district_data[district] = {
+                'apartment_values': district_apartment_complexes_values,
+                'prices': district_apartment_complexes_prices,
+                'num_apartments': district_apartment_complexes_values.shape[0]
+            }
+            
+            # 각 시점에 대한 인덱스 생성
+            for time_idx in range(len(table_2_copy) - window_size):
+                self.data_indices.append((district, time_idx))
+          # 메모리 정리
+        del table_1_copy, table_2_copy, table_3_copy
+        gc.collect()
 
-            encoder_input_tensors = torch.zeros(district_apartment_complexes_values.shape[0], len(table_2_copy), 12).to(DEVICE).type(torch.float32) # 인코더 입력 텐서들 초기화(인코더 입력 텐서 여러개) # (동 안의 단지 개수, 204(시점), 12)
-            for i, district_apartment_complex_values in enumerate(district_apartment_complexes_values):
-                district_apartment_complex_tensor = torch.FloatTensor(district_apartment_complex_values).to(DEVICE).repeat(len(table_2_copy),1) 
-                encoder_input_tensor = torch.cat((district_apartment_complex_tensor, economy_tensor), dim=1)
-                encoder_input_tensors[i] = encoder_input_tensor
-
-            if embedding_dim != 'None': # 임베딩 벡터를 사용할 때
-                with torch.no_grad():
-                    district_apartment_complexes_embedding_matrixes = torch.zeros(encoder_input_tensors.shape[0], len(table_2_copy), embedding_dim).type(torch.float32) # (동 안의 단지 개수, 204/20, 1024)
-                    for i in range(encoder_input_tensors.shape[0]): # 동 안의 단지 (204/20, 1024)
-                        district_apartment_complexes_embedding_matrixes[i] = model.encoder(encoder_input_tensors[i])
-
-            # dong_apartment_complexes_prices(동 안의 단지마다 가격 구한 뒤 리스트 형식으로 모으기) 완성 # (동 안의 단지 개수, 204/20, 1)
-            district_apartment_complexes_aids = table_1_copy[table_1_copy['district'] == district]['aid'].values # (동 안의 단지 개수, )
-            district_apartment_complexes_prices = torch.zeros(district_apartment_complexes_aids.shape[0], len(table_2_copy), 1).to(DEVICE).type(torch.float32) # (동 안의 단지 개수, 204/20, 1)
-            for i, district_apartment_complex_aid in zip(range(district_apartment_complexes_aids.shape[0]), district_apartment_complexes_aids): # 동 안의 단지 개수, 동 안의 단지들의 aids
-                district_apartment_complexes_prices[i] = torch.from_numpy(pd.DataFrame({'did': range(0, len(table_2_copy))}).merge(table_3_copy[table_3_copy['aid'] == district_apartment_complex_aid][['did','price']], on='did', how='outer').fillna(0).set_index('did').values) # (204/20, 1)
-
-            if embedding_dim == 'None': # 임베딩 벡터가 없을 때
-                district_apartment_complexes_embedding_matrixes = encoder_input_tensors.type(torch.float32)
+    def _get_embedding_matrix(self, district, time_idx):
+        """지연 로딩: 필요할 때만 임베딩 매트릭스 생성"""
+        district_data = self.district_data[district]
+        district_apartment_complexes_values = district_data['apartment_values']
+        
+        # 입력 텐서 생성 (CPU에서)
+        encoder_input_tensors = torch.zeros(district_apartment_complexes_values.shape[0], 
+                                          self.window_size, 12, device=self.device_cpu)
+        
+        for i, apartment_values in enumerate(district_apartment_complexes_values):
+            # 해당 시점의 윈도우 데이터 생성
+            apartment_tensor = torch.FloatTensor(apartment_values).repeat(self.window_size, 1)
+            economy_window = self.economy_tensor[time_idx:time_idx + self.window_size]
+            encoder_input = torch.cat((apartment_tensor, economy_window), dim=1)
+            encoder_input_tensors[i] = encoder_input
+        
+        if self.embedding_dim != 'None' and self.model is not None:
+            # 임베딩 생성 (모델은 이미 GPU에 있음)
+            with torch.no_grad():
+                embedding_matrix = torch.zeros(district_apartment_complexes_values.shape[0], 
+                                             self.window_size, self.embedding_dim, device=self.device_cpu)
                 
-            # dong_apartment_complexes_embedding_matrixes와 dong_apartment_complexes_prices window_size로 나누기
-            for i in range(len(table_2_copy)-window_size): # window_size 고려한 시점(0~199/19)
-                if embedding_dim == 'None': # 임베딩 벡터가 없을 때
-                    district_apartment_complexes_embedding_matrixes_with_window_size = torch.zeros(max_apartment_complexes, window_size, 12)
-                else:
-                    district_apartment_complexes_embedding_matrixes_with_window_size = torch.zeros(max_apartment_complexes, window_size, embedding_dim) # (38/224, window_size, 1024)
-                district_apartment_complexes_prices_with_window_size = torch.zeros(max_apartment_complexes, 1).to(DEVICE) # (38/24, 1)
-                
-                district_apartment_complexes_embedding_matrixes_with_window_size[:district_apartment_complexes_embedding_matrixes.shape[0],:,:] = district_apartment_complexes_embedding_matrixes[:,i:i+window_size,:]
-                district_apartment_complexes_prices_with_window_size[:district_apartment_complexes_prices.shape[0],:] = district_apartment_complexes_prices[:,i+window_size,:]
-                district_apartment_complexes_embedding_matrixes_with_window_size_index = torch.where(district_apartment_complexes_prices_with_window_size > 0, 1, 0).squeeze()
-                 
-                districts_apartment_complexes_embedding_matrixes_with_window_size.append(district_apartment_complexes_embedding_matrixes_with_window_size) # (38, window_size, 1024)
-                districts_apartment_complexes_embedding_matrixes_with_window_size_num.append(district_apartment_complexes_embedding_matrixes.shape[0]) # 자연수
-                districts_apartment_complexes_embedding_matrixes_with_window_size_index.append(district_apartment_complexes_embedding_matrixes_with_window_size_index) # (1, )
-                districts_apartment_complexes_prices_with_window_size.append(district_apartment_complexes_prices_with_window_size) # (38/24, 1)
-
-        # 동마다 시점들 -> 시점들마다 동 
-        grouped_districts_apartment_complexes_embedding_matrixes_with_window_size = [districts_apartment_complexes_embedding_matrixes_with_window_size[i:i+len(table_2_copy)-window_size] for i in range(0,len(districts_apartment_complexes_embedding_matrixes_with_window_size),len(table_2_copy)-window_size)]
-        districts_apartment_complexes_embedding_matrixes_with_window_size = [item for group in zip(*grouped_districts_apartment_complexes_embedding_matrixes_with_window_size) for item in group]
-
-        self.districts_apartment_complexes_embedding_matrixes_with_window_size = districts_apartment_complexes_embedding_matrixes_with_window_size
-        self.districts_apartment_complexes_embedding_matrixes_with_window_size_num = districts_apartment_complexes_embedding_matrixes_with_window_size_num
-        self.districts_apartment_complexes_embedding_matrixes_with_window_size_index = districts_apartment_complexes_embedding_matrixes_with_window_size_index
-        self.districts_apartment_complexes_prices_with_window_size = districts_apartment_complexes_prices_with_window_size
+                # 배치 단위로 처리하여 메모리 효율성 증대
+                batch_size = 4  # 작은 배치로 처리
+                for i in range(0, encoder_input_tensors.shape[0], batch_size):
+                    end_idx = min(i + batch_size, encoder_input_tensors.shape[0])
+                    batch_input = encoder_input_tensors[i:end_idx].to(self.DEVICE)
+                    
+                    batch_embeddings = torch.zeros(end_idx - i, self.window_size, self.embedding_dim, device=self.device_cpu)
+                    for j in range(end_idx - i):
+                        # 모델은 이미 GPU에 있으므로 바로 사용
+                        embedding = self.model.encoder(batch_input[j]).cpu()
+                        batch_embeddings[j] = embedding
+                    
+                    embedding_matrix[i:end_idx] = batch_embeddings
+                    
+                    # GPU 메모리 정리
+                    del batch_input, batch_embeddings
+                    torch.cuda.empty_cache()
+        else:
+            embedding_matrix = encoder_input_tensors
+        
+        return embedding_matrix
 
     def __getitem__(self, i):
-        # 임베딩(x), 단지 개수, y값 있는 단지 인덱스, 가격(y)
-        return self.districts_apartment_complexes_embedding_matrixes_with_window_size[i], self.districts_apartment_complexes_embedding_matrixes_with_window_size_num[i], self.districts_apartment_complexes_embedding_matrixes_with_window_size_index[i], self.districts_apartment_complexes_prices_with_window_size[i]
+        district, time_idx = self.data_indices[i]
+        district_data = self.district_data[district]
+        
+        # 임베딩 매트릭스 지연 로딩
+        embedding_matrix = self._get_embedding_matrix(district, time_idx)
+        
+        # 결과 텐서 준비 (GPU로 이동)
+        if self.embedding_dim == 'None':
+            result_embedding = torch.zeros(self.max_apartment_complexes, self.window_size, 12)
+        else:
+            result_embedding = torch.zeros(self.max_apartment_complexes, self.window_size, self.embedding_dim)
+        
+        result_prices = torch.zeros(self.max_apartment_complexes, 1)
+        
+        # 데이터 복사
+        num_apartments = district_data['num_apartments']
+        result_embedding[:num_apartments] = embedding_matrix
+        result_prices[:num_apartments] = district_data['prices'][:, time_idx + self.window_size]
+        
+        # 인덱스 계산
+        price_index = torch.where(result_prices > 0, 1, 0).squeeze()
+        
+        # GPU로 이동
+        result_embedding = result_embedding.to(self.DEVICE)
+        result_prices = result_prices.to(self.DEVICE)
+        price_index = price_index.to(self.DEVICE)
+        
+        return result_embedding, num_apartments, price_index, result_prices
     
     def __len__(self):
-        return len(self.districts_apartment_complexes_embedding_matrixes_with_window_size)
+        return len(self.data_indices)

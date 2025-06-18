@@ -34,3 +34,23 @@ class Embedding_Dataset(Dataset):
 
     def __len__(self):
         return len(self.input_tensor)
+
+import pandas as pd
+import numpy as np
+import torch
+from torch.utils.data import Dataset
+from sklearn.preprocessing import StandardScaler
+
+class Embedding_Dataset(Dataset):
+    def __init__(self, table_merge, DEVICE):
+        input_values = table_merge[[cols for cols in table_merge.columns if cols not in ['aid','location','name','did','year','month','price']]].values
+        output_values = table_merge[['price']].values * 0.0001
+
+        self.input_tensor = torch.FloatTensor(input_values).to(DEVICE).type(torch.float32)
+        self.output_tensor = torch.FloatTensor(output_values).to(DEVICE).type(torch.float32)
+
+    def __getitem__(self, i):
+        return self.input_tensor[i], self.output_tensor[i]
+
+    def __len__(self):
+        return len(self.input_tensor)

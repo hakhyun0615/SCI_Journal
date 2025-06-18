@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html>
+<head>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8" />
+    <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.3/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css"/>
+    <link rel="stylesheet" href="https://netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap-glyphicons.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.2.0/css/all.min.css"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Leaflet.awesome-markers/2.0.2/leaflet.awesome-markers.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/python-visualization/folium/folium/templates/leaflet.awesome.rotate.min.css"/>
+    
+            <meta name="viewport" content="width=device-width,
+                initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+            <style>
+                #map_cd1ad97d26473f3a147a8aa7c47ec74c {
+                    position: relative;
+                    width: 100.0%;
+                    height: 100.0%;
+                    left: 0.0%;
+                    top: 0.0%;
+                }
+                .leaflet-container { font-size: 1rem; }
+            </style>
+
+            <style>html, body {
+                width: 100%;
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+            </style>
+
+            <style>#map {
+                position:absolute;
+                top:0;
+                bottom:0;
+                right:0;
+                left:0;
+                }
+            </style>
+
+            <script>
+                L_NO_TOUCH = false;
+                L_DISABLE_3D = false;
+            </script>
+
+        
+</head>
+<body>
+    
+    
+            <div class="folium-map" id="map_cd1ad97d26473f3a147a8aa7c47ec74c" ></div>
+        
+</body>
+<script>
+    
+    
+            var map_cd1ad97d26473f3a147a8aa7c47ec74c = L.map(
+                "map_cd1ad97d26473f3a147a8aa7c47ec74c",
+                {
+                    center: [37.5665, 127.0],
+                    crs: L.CRS.EPSG3857,
+                    ...{
+  "zoom": 12,
+  "zoomControl": true,
+  "preferCanvas": false,
+}
+
+                }
+            );
+
+            
+
+        
+    
+            var tile_layer_b7ef21f6f68ce8d3ba364ac7b43f6f2c = L.tileLayer(
+                "https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.png",
+                {
+  "minZoom": 0,
+  "maxZoom": 20,
+  "maxNativeZoom": 20,
+  "noWrap": false,
+  "attribution": "Map tiles by \u003ca href=\"http://stamen.com\"\u003eStamen Design\u003c/a\u003e, \u003ca href=\"http://creativecommons.org/licenses/by/3.0\"\u003eCC BY 3.0\u003c/a\u003e \u0026mdash; Map data \u0026copy; \u003ca href=\"https://www.openstreetmap.org/copyright\"\u003eOpenStreetMap\u003c/a\u003e contributors",
+  "subdomains": "abcd",
+  "detectRetina": false,
+  "tms": false,
+  "opacity": 1,
+}
+
+            );
+        
+    
+            tile_layer_b7ef21f6f68ce8d3ba364ac7b43f6f2c.addTo(map_cd1ad97d26473f3a147a8aa7c47ec74c);
+        
+    
+            var circle_marker_f15e8b6114a076409c98b5ef3b08811b = L.circleMarker(
+                [37.4848024, 127.0571779],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(map_cd1ad97d26473f3a147a8aa7c47ec74c);
+        
+    
+        var popup_a783d6b5d2944c50a4b7f064ccf4d503 = L.popup({
+  "maxWidth": 200,
+});
+
+        
+            
+                var html_e1fad387ab5242d0737e11004356507e = $(`<div id="html_e1fad387ab5242d0737e11004356507e" style="width: 100.0%; height: 100.0%;">             <b>우성9차아파트901동,902동</b><br>             구: 강남구<br>             거래횟수: 80회             </div>`)[0];
+                popup_a783d6b5d2944c50a4b7f064ccf4d503.setContent(html_e1fad387ab5242d0737e11004356507e);
+            
+        
+
+        circle_marker_f15e8b6114a076409c98b5ef3b08811b.bindPopup(popup_a783d6b5d2944c50a4b7f064ccf4d503)
+        ;
+
+        
+    
+    
+            circle_marker_f15e8b6114a076409c98b5ef3b08811b.bindTooltip(
+                `<div>
+                     우성9차아파트901동,902동 (강남구)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_7ebe2b2686a5d16c280be45c79b87e53 = L.circleMarker(
+                [37.4878994, 127.0609236],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(map_cd1ad97d26473f3a147a8aa7c47ec74c);
+        
+    
+        var popup_f763c78b690794cf8b6783b37bfd78ee = L.popup({
+  "maxWidth": 200,
+});
+
+        
+            
+                var html_72e5b049a05e064aeb7cbd448ef805b1 = $(`<div id="html_72e5b049a05e064aeb7cbd448ef805b1" style="width: 100.0%; height: 100.0%;">             <b>현대아파트3</b><br>             구: 강남구<br>             거래횟수: 26회             </div>`)[0];
+                popup_f763c78b690794cf8b6783b37bfd78ee.setContent(html_72e5b049a05e064aeb7cbd448ef805b1);
+            
+        
+
+        circle_marker_7ebe2b2686a5d16c280be45c79b87e53.bindPopup(popup_f763c78b690794cf8b6783b37bfd78ee)
+        ;
+
+        
+    
+    
+            circle_marker_7ebe2b2686a5d16c280be45c79b87e53.bindTooltip(
+                `<div>
+                     현대아파트3 (강남구)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_5c0bb47b2e80fad9d544c1c098deb912 = L.circleMarker(
+                [37.4843872, 127.054267],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(map_cd1ad97d26473f3a147a8aa7c47ec74c);
+        
+    
+        var popup_89670160eaebf62c59bfd6f6b1f08ab2 = L.popup({
+  "maxWidth": 200,
+});
+
+        
+            
+                var html_45d5f6030afc97733beccdb212863529 = $(`<div id="html_45d5f6030afc97733beccdb212863529" style="width: 100.0%; height: 100.0%;">             <b>경남1</b><br>             구: 강남구<br>             거래횟수: 79회             </div>`)[0];
+                popup_89670160eaebf62c59bfd6f6b1f08ab2.setContent(html_45d5f6030afc97733beccdb212863529);
+            
+        
+
+        circle_marker_5c0bb47b2e80fad9d544c1c098deb912.bindPopup(popup_89670160eaebf62c59bfd6f6b1f08ab2)
+        ;
+
+        
+    
+    
+            circle_marker_5c0bb47b2e80fad9d544c1c098deb912.bindTooltip(
+                `<div>
+                     경남1 (강남구)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4eb19e115b2628aeb8b8c39d1b8a7186 = L.circleMarker(
+                [37.4843872, 127.054267],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(map_cd1ad97d26473f3a147a8aa7c47ec74c);
+        
+    
+        var popup_6423e5fddb8b339f7081dcbcf5f68588 = L.popup({
+  "maxWidth": 200,
+});
+
+        
+            
+                var html_ae71b7cd5d2f0d01a9d42ad45514f912 = $(`<div id="html_ae71b7cd5d2f0d01a9d42ad45514f912" style="width: 100.0%; height: 100.0%;">             <b>경남2차</b><br>             구: 강남구<br>             거래횟수: 17회             </div>`)[0];
+                popup_6423e5fddb8b339f7081dcbcf5f68588.setContent(html_ae71b7cd5d2f0d01a9d42ad45514f912);
+            
+        
+
+        circle_marker_4eb19e115b2628aeb8b8c39d1b8a7186.bindPopup(popup_6423e5fddb8b339f7081dcbcf5f68588)
+        ;
+
+        
+    
+    
+            circle_marker_4eb19e115b2628aeb8b8c39d1b8a7186.bindTooltip(
+                `<div>
+                     경남2차 (강남구)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_74dd900c60b7eb21188cbc25bdc80d2e = L.circleMarker(
+                [37.5146969, 127.0227423],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(map_cd1ad97d26473f3a147a8aa7c47ec74c);
+        
+    
+        var popup_f8a23cc93feb58c6069cc98de6a5c340 = L.popup({
+  "maxWidth": 200,
+});
+
+        
+            
+                var html_2eef2dd3e5c51e2f43c4a5c1e82d230d = $(`<div id="html_2eef2dd3e5c51e2f43c4a5c1e82d230d" style="width: 100.0%; height: 100.0%;">             <b>신동아(22)</b><br>             구: 강남구<br>             거래횟수: 115회             </div>`)[0];
+                popup_f8a23cc93feb58c6069cc98de6a5c340.setContent(html_2eef2dd3e5c51e2f43c4a5c1e82d230d);
+            
+        
+
+        circle_marker_74dd900c60b7eb21188cbc25bdc80d2e.bindPopup(popup_f8a23cc93feb58c6069cc98de6a5c340)
+        ;
+
+        
+    
+    
+            circle_marker_74dd900c60b7eb21188cbc25bdc80d2e.bindTooltip(
+                `<div>
+                     신동아(22) (강남구)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9a976e54d2f1b4c1be428ba8531d0cc2 = L.circleMarker(
+                [37.5067547, 127.0303436],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(map_cd1ad97d26473f3a147a8aa7c47ec74c);
+        
+    
+        var popup_441cb0361ebfe6381fa25f4d6eb996b9 = L.popup({
+  "maxWidth": 200,
+});
+
+        
+            
+                var html_2454df5e05216670dfb536ffd5c5dc9e = $(`<div id="html_2454df5e05216670dfb536ffd5c5dc9e" style="width: 100.0%; height: 100.0%;">             <b>논현동한화꿈에그린</b><br>             구: 강남구<br>             거래횟수: 55회             </div>`)[0];
+                popup_441cb0361ebfe6381fa25f4d6eb996b9.setContent(html_2454df5e05216670dfb536ffd5c5dc9e);
+            
+        
+
+        circle_marker_9a976e54d2f1b4c1be428ba8531d0cc2.bindPopup(popup_441cb0361ebfe6381fa25f4d6eb996b9)
+        ;
+
+        
+    
+    
+            circle_marker_9a976e54d2f1b4c1be428ba8531d0cc2.bindTooltip(
+                `<div>
+                     논현동한화꿈에그린 (강남구)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d85ace6a6a1c4479d8e4287b15f2e3de = L.circleMarker(
+                [37.5196689, 127.0379979],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(map_cd1ad97d26473f3a147a8aa7c47ec74c);
+        
+    
+        var popup_d5eb23f3783d9ea032eb17e15fe3db79 = L.popup({
+  "maxWidth": 200,
+});
+
+        
+            
+                var html_45f48925784d49b90d99447b378e7dd5 = $(`<div id="html_45f48925784d49b90d99447b378e7dd5" style="width: 100.0%; height: 100.0%;">             <b>쌍용</b><br>             구: 강남구<br>             거래횟수: 58회             </div>`)[0];
+                popup_d5eb23f3783d9ea032eb17e15fe3db79.setContent(html_45f48925784d49b90d99447b378e7dd5);
+            
+        
+
+        circle_marker_d85ace6a6a1c4479d8e4287b15f2e3de.bindPopup(popup_d5eb23f3783d9ea032eb17e15fe3db79)
+        ;
+
+        
+    
+    
+            circle_marker_d85ace6a6a1c4479d8e4287b15f2e3de.bindTooltip(
+                `<div>
+                     쌍용 (강남구)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_f114267228a0c132613326b70360a219 = L.circleMarker(
+                [37.5066597, 127.0289875],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(map_cd1ad97d26473f3a147a8aa7c47ec74c);
+        
+    
+        var popup_7ef4de76643b18f6f60288e35f4625f0 = L.popup({
+  "maxWidth": 200,
+});
+
+        
+            
+                var html_ade74550269549bdcbcb13b578de03c4 = $(`<div id="html_ade74550269549bdcbcb13b578de03c4" style="width: 100.0%; height: 100.0%;">             <b>e-편한세상</b><br>             구: 강남구<br>             거래횟수: 34회             </div>`)[0];
+                popup_7ef4de76643b18f6f60288e35f4625f0.setContent(html_ade74550269549bdcbcb13b578de03c4);
+            
+        
+
+        circle_marker_f114267228a0c132613326b70360a219.bindPopup(popup_7ef4de76643b18f6f60288e35f4625f0)
+        ;
+
+        
+    
+    
+            circle_marker_f114267228a0c132613326b70360a219.bindTooltip(
+                `<div>
+                     e-편한세상 (강남구)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_07a638716d9138c68e043f01bd5c8f94 = L.circleMarker(
+                [37.5074711, 127.0307946],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(map_cd1ad97d26473f3a147a8aa7c47ec74c);
+        
+    
+        var popup_4da963d116ffa1d316101341ad4385cf = L.popup({
+  "maxWidth": 200,
+});
+
+        
+            
+                var html_e9cbc35a6d8f49681e160ce9766ec492 = $(`<div id="html_e9cbc35a6d8f49681e160ce9766ec492" style="width: 100.0%; height: 100.0%;">             <b>한화꿈에그린2차</b><br>             구: 강남구<br>             거래횟수: 24회             </div>`)[0];
+                popup_4da963d116ffa1d316101341ad4385cf.setContent(html_e9cbc35a6d8f49681e160ce9766ec492);
+            
+        
+
+        circle_marker_07a638716d9138c68e043f01bd5c8f94.bindPopup(popup_4da963d116ffa1d316101341ad4385cf)
+        ;
+
+        
+    
+    
+            circle_marker_07a638716d9138c68e043f01bd5c8f94.bindTooltip(
+                `<div>
+                     한화꿈에그린2차 (강남구)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_9f521379a3edff5969c7512a0fca4edd = L.circleMarker(
+                [37.5106451, 127.0381352],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(map_cd1ad97d26473f3a147a8aa7c47ec74c);
+        
+    
+        var popup_9dc60e352e53b58d61b9f4b97c1eab2a = L.popup({
+  "maxWidth": 200,
+});
+
+        
+            
+                var html_d6d905264a1ce6d226109d2be50ca9e6 = $(`<div id="html_d6d905264a1ce6d226109d2be50ca9e6" style="width: 100.0%; height: 100.0%;">             <b>경남논현</b><br>             구: 강남구<br>             거래횟수: 20회             </div>`)[0];
+                popup_9dc60e352e53b58d61b9f4b97c1eab2a.setContent(html_d6d905264a1ce6d226109d2be50ca9e6);
+            
+        
+
+        circle_marker_9f521379a3edff5969c7512a0fca4edd.bindPopup(popup_9dc60e352e53b58d61b9f4b97c1eab2a)
+        ;
+
+        
+    
+    
+            circle_marker_9f521379a3edff5969c7512a0fca4edd.bindTooltip(
+                `<div>
+                     경남논현 (강남구)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b8e66d216db5718de178aafb99ec9d4d = L.circleMarker(
+                [37.5102504, 127.0375793],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(map_cd1ad97d26473f3a147a8aa7c47ec74c);
+        
+    
+        var popup_122f519d4b610073ee6dfd4db65a8cd6 = L.popup({
+  "maxWidth": 200,
+});
+
+        
+            
+                var html_5b5f7111a617d26ca41a3c92c0b91433 = $(`<div id="html_5b5f7111a617d26ca41a3c92c0b91433" style="width: 100.0%; height: 100.0%;">             <b>동부센트레빌</b><br>             구: 강남구<br>             거래횟수: 58회             </div>`)[0];
+                popup_122f519d4b610073ee6dfd4db65a8cd6.setContent(html_5b5f7111a617d26ca41a3c92c0b91433);
+            
+        
+
+        circle_marker_b8e66d216db5718de178aafb99ec9d4d.bindPopup(popup_122f519d4b610073ee6dfd4db65a8cd6)
+        ;
+
+        
+    
+    
+            circle_marker_b8e66d216db5718de178aafb99ec9d4d.bindTooltip(
+                `<div>
+                     동부센트레빌 (강남구)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_4532d8622b2d9f5890e41397a31866a9 = L.circleMarker(
+                [37.517802, 127.0373364],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(map_cd1ad97d26473f3a147a8aa7c47ec74c);
+        
+    
+        var popup_88a1e105e2d0456371dc3b2be6ee6743 = L.popup({
+  "maxWidth": 200,
+});
+
+        
+            
+                var html_73e9a85b31e7be75320f1f8db625e853 = $(`<div id="html_73e9a85b31e7be75320f1f8db625e853" style="width: 100.0%; height: 100.0%;">             <b>우민</b><br>             구: 강남구<br>             거래횟수: 56회             </div>`)[0];
+                popup_88a1e105e2d0456371dc3b2be6ee6743.setContent(html_73e9a85b31e7be75320f1f8db625e853);
+            
+        
+
+        circle_marker_4532d8622b2d9f5890e41397a31866a9.bindPopup(popup_88a1e105e2d0456371dc3b2be6ee6743)
+        ;
+
+        
+    
+    
+            circle_marker_4532d8622b2d9f5890e41397a31866a9.bindTooltip(
+                `<div>
+                     우민 (강남구)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b99143fcdc4021c4e7a660cec05c7582 = L.circleMarker(
+                [37.5133862, 127.0386984],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(map_cd1ad97d26473f3a147a8aa7c47ec74c);
+        
+    
+        var popup_b28260723794e33324233f7fce20cec0 = L.popup({
+  "maxWidth": 200,
+});
+
+        
+            
+                var html_4edfea33b8f1a69d3e60e5ea8ca2535c = $(`<div id="html_4edfea33b8f1a69d3e60e5ea8ca2535c" style="width: 100.0%; height: 100.0%;">             <b>두산위브1단지</b><br>             구: 강남구<br>             거래횟수: 57회             </div>`)[0];
+                popup_b28260723794e33324233f7fce20cec0.setContent(html_4edfea33b8f1a69d3e60e5ea8ca2535c);
+            
+        
+
+        circle_marker_b99143fcdc4021c4e7a660cec05c7582.bindPopup(popup_b28260723794e33324233f7fce20cec0)
+        ;
+
+        
+    
+    
+            circle_marker_b99143fcdc4021c4e7a660cec05c7582.bindTooltip(
+                `<div>
+                     두산위브1단지 (강남구)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_ccdc7b737f2b8be70feccd841143b91e = L.circleMarker(
+                [37.4908748, 127.0573085],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(map_cd1ad97d26473f3a147a8aa7c47ec74c);
+        
+    
+        var popup_9ccff803e7a371ad4cb72d349bc88091 = L.popup({
+  "maxWidth": 200,
+});
+
+        
+            
+                var html_3d3d6547f4522703106e9287ef15ff8e = $(`<div id="html_3d3d6547f4522703106e9287ef15ff8e" style="width: 100.0%; height: 100.0%;">             <b>개포우성2</b><br>             구: 강남구<br>             거래횟수: 32회             </div>`)[0];
+                popup_9ccff803e7a371ad4cb72d349bc88091.setContent(html_3d3d6547f4522703106e9287ef15ff8e);
+            
+        
+
+        circle_marker_ccdc7b737f2b8be70feccd841143b91e.bindPopup(popup_9ccff803e7a371ad4cb72d349bc88091)
+        ;
+
+        
+    
+    
+            circle_marker_ccdc7b737f2b8be70feccd841143b91e.bindTooltip(
+                `<div>
+                     개포우성2 (강남구)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2e89cd1d77caaa07e6aef9d06d9ed0a2 = L.circleMarker(
+                [37.4965682, 127.0588507],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(map_cd1ad97d26473f3a147a8aa7c47ec74c);
+        
+    
+        var popup_a58427e91909dd417664743fe44fa5c8 = L.popup({
+  "maxWidth": 200,
+});
+
+        
+            
+                var html_bf2cfa4fc6a9ac513cd8c7acd081c31f = $(`<div id="html_bf2cfa4fc6a9ac513cd8c7acd081c31f" style="width: 100.0%; height: 100.0%;">             <b>대치삼성</b><br>             구: 강남구<br>             거래횟수: 131회             </div>`)[0];
+                popup_a58427e91909dd417664743fe44fa5c8.setContent(html_bf2cfa4fc6a9ac513cd8c7acd081c31f);
+            
+        
+
+        circle_marker_2e89cd1d77caaa07e6aef9d06d9ed0a2.bindPopup(popup_a58427e91909dd417664743fe44fa5c8)
+        ;
+
+        
+    
+    
+            circle_marker_2e89cd1d77caaa07e6aef9d06d9ed0a2.bindTooltip(
+                `<div>
+                     대치삼성 (강남구)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_d0abec2e591c735eb57bce7503bb4e3c = L.circleMarker(
+                [37.4924163, 127.0627752],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(map_cd1ad97d26473f3a147a8aa7c47ec74c);
+        
+    
+        var popup_d495fc88b351a30f9d64be5bfdfbf203 = L.popup({
+  "maxWidth": 200,
+});
+
+        
+            
+                var html_135a34f284b0a7868c5e4d71ad8abf47 = $(`<div id="html_135a34f284b0a7868c5e4d71ad8abf47" style="width: 100.0%; height: 100.0%;">             <b>선경1차(1동-7동)</b><br>             구: 강남구<br>             거래횟수: 65회             </div>`)[0];
+                popup_d495fc88b351a30f9d64be5bfdfbf203.setContent(html_135a34f284b0a7868c5e4d71ad8abf47);
+            
+        
+
+        circle_marker_d0abec2e591c735eb57bce7503bb4e3c.bindPopup(popup_d495fc88b351a30f9d64be5bfdfbf203)
+        ;
+
+        
+    
+    
+            circle_marker_d0abec2e591c735eb57bce7503bb4e3c.bindTooltip(
+                `<div>
+                     선경1차(1동-7동) (강남구)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_2bc0dc59f3f3d71843f907ba63685830 = L.circleMarker(
+                [37.4924163, 127.0627752],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(map_cd1ad97d26473f3a147a8aa7c47ec74c);
+        
+    
+        var popup_f4cea084608fe2e739e4b1e3cb6c0f32 = L.popup({
+  "maxWidth": 200,
+});
+
+        
+            
+                var html_e66d4ad65d49cd58a7b726729e0b2a5e = $(`<div id="html_e66d4ad65d49cd58a7b726729e0b2a5e" style="width: 100.0%; height: 100.0%;">             <b>선경2차(8동-12동)</b><br>             구: 강남구<br>             거래횟수: 59회             </div>`)[0];
+                popup_f4cea084608fe2e739e4b1e3cb6c0f32.setContent(html_e66d4ad65d49cd58a7b726729e0b2a5e);
+            
+        
+
+        circle_marker_2bc0dc59f3f3d71843f907ba63685830.bindPopup(popup_f4cea084608fe2e739e4b1e3cb6c0f32)
+        ;
+
+        
+    
+    
+            circle_marker_2bc0dc59f3f3d71843f907ba63685830.bindTooltip(
+                `<div>
+                     선경2차(8동-12동) (강남구)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_15ccc6d3da5082c88bc0cb51d91de30f = L.circleMarker(
+                [37.4942012, 127.0584852],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(map_cd1ad97d26473f3a147a8aa7c47ec74c);
+        
+    
+        var popup_1cba1a2a6a1793650710f96231a5319c = L.popup({
+  "maxWidth": 200,
+});
+
+        
+            
+                var html_63091de678911756960928ed22eb65e1 = $(`<div id="html_63091de678911756960928ed22eb65e1" style="width: 100.0%; height: 100.0%;">             <b>래미안대치팰리스</b><br>             구: 강남구<br>             거래횟수: 64회             </div>`)[0];
+                popup_1cba1a2a6a1793650710f96231a5319c.setContent(html_63091de678911756960928ed22eb65e1);
+            
+        
+
+        circle_marker_15ccc6d3da5082c88bc0cb51d91de30f.bindPopup(popup_1cba1a2a6a1793650710f96231a5319c)
+        ;
+
+        
+    
+    
+            circle_marker_15ccc6d3da5082c88bc0cb51d91de30f.bindTooltip(
+                `<div>
+                     래미안대치팰리스 (강남구)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_38afa7bd23785ea81555ea1986f63df9 = L.circleMarker(
+                [37.5045644, 127.0541516],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(map_cd1ad97d26473f3a147a8aa7c47ec74c);
+        
+    
+        var popup_d1c2f61761d2226f794d6b1988384c03 = L.popup({
+  "maxWidth": 200,
+});
+
+        
+            
+                var html_9988d879b3870e0f81f574f8a94ad741 = $(`<div id="html_9988d879b3870e0f81f574f8a94ad741" style="width: 100.0%; height: 100.0%;">             <b>대치동우정에쉐르1</b><br>             구: 강남구<br>             거래횟수: 17회             </div>`)[0];
+                popup_d1c2f61761d2226f794d6b1988384c03.setContent(html_9988d879b3870e0f81f574f8a94ad741);
+            
+        
+
+        circle_marker_38afa7bd23785ea81555ea1986f63df9.bindPopup(popup_d1c2f61761d2226f794d6b1988384c03)
+        ;
+
+        
+    
+    
+            circle_marker_38afa7bd23785ea81555ea1986f63df9.bindTooltip(
+                `<div>
+                     대치동우정에쉐르1 (강남구)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+    
+            var circle_marker_b74445ad9180b874a1a627dedd29490b = L.circleMarker(
+                [37.5137517, 127.0435828],
+                {"bubblingMouseEvents": true, "color": "red", "dashArray": null, "dashOffset": null, "fill": true, "fillColor": "blue", "fillOpacity": 0.7, "fillRule": "evenodd", "lineCap": "round", "lineJoin": "round", "opacity": 1.0, "radius": 8, "stroke": true, "weight": 2}
+            ).addTo(map_cd1ad97d26473f3a147a8aa7c47ec74c);
+        
+    
+        var popup_d4ba2b5f1e5f18be8a0521abd4ffa93b = L.popup({
+  "maxWidth": 200,
+});
+
+        
+            
+                var html_80d9f524b855c90d04f6f389046000bc = $(`<div id="html_80d9f524b855c90d04f6f389046000bc" style="width: 100.0%; height: 100.0%;">             <b>개포우성1</b><br>             구: 강남구<br>             거래횟수: 82회             </div>`)[0];
+                popup_d4ba2b5f1e5f18be8a0521abd4ffa93b.setContent(html_80d9f524b855c90d04f6f389046000bc);
+            
+        
+
+        circle_marker_b74445ad9180b874a1a627dedd29490b.bindPopup(popup_d4ba2b5f1e5f18be8a0521abd4ffa93b)
+        ;
+
+        
+    
+    
+            circle_marker_b74445ad9180b874a1a627dedd29490b.bindTooltip(
+                `<div>
+                     개포우성1 (강남구)
+                 </div>`,
+                {
+  "sticky": true,
+}
+            );
+        
+</script>
+</html>
