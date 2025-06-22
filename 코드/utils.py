@@ -2,6 +2,12 @@ import torch
 from torch import nn
 import matplotlib.pyplot as plt
 
+class RMSE(nn.Module):
+    def __init__(self):
+        super(RMSE,self).__init__()
+        self.mse = nn.MSELoss()
+    def forward(self, y_true, y_pred):
+        return torch.sqrt(self.mse(y_true, y_pred))
 
 def rmse(y_pred, y_true): 
     mse = torch.mean((y_true - y_pred) ** 2)
